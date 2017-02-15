@@ -1,0 +1,14 @@
+D:\Projects\Unziper\Unziper\bin\Debug\Unziper.exe.config
+D:\Projects\Unziper\Unziper\bin\Debug\Unziper.exe
+D:\Projects\Unziper\Unziper\bin\Debug\Unziper.pdb
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.csprojResolveAssemblyReference.cache
+D:\Projects\Unziper\Unziper\obj\Debug\MainWindow.g.cs
+D:\Projects\Unziper\Unziper\obj\Debug\App.g.cs
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper_MarkupCompile.cache
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper_MarkupCompile.lref
+D:\Projects\Unziper\Unziper\obj\Debug\MainWindow.baml
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.g.resources
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.Properties.Resources.resources
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.csproj.GenerateResource.Cache
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.exe
+D:\Projects\Unziper\Unziper\obj\Debug\Unziper.pdb
