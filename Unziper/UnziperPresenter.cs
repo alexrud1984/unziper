@@ -21,6 +21,12 @@ namespace Unziper
         private void AttachUziperModelI(IUnzipModel model)
         {
             model.FileUnzipped += Model_FileUnzipped;
+            model.FileExists += Model_FileExists;
+        }
+
+        private void Model_FileExists(string sender)
+        {
+            view.UnzippedFile = "File already exists "+sender;
         }
 
         private void Model_FileUnzipped(string sender)

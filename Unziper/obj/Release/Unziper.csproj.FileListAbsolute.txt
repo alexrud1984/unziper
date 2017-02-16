@@ -1,0 +1,14 @@
+D:\Projects\Unziper\Unziper\bin\Release\Unziper.exe.config
+D:\Projects\Unziper\Unziper\bin\Release\Unziper.exe
+D:\Projects\Unziper\Unziper\bin\Release\Unziper.pdb
+D:\Projects\Unziper\Unziper\bin\Release\FolderPickerLib.dll
+D:\Projects\Unziper\Unziper\obj\Release\MainWindow.g.cs
+D:\Projects\Unziper\Unziper\obj\Release\App.g.cs
+D:\Projects\Unziper\Unziper\obj\Release\Unziper_MarkupCompile.cache
+D:\Projects\Unziper\Unziper\obj\Release\Unziper_MarkupCompile.lref
+D:\Projects\Unziper\Unziper\obj\Release\MainWindow.baml
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.g.resources
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.Properties.Resources.resources
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.csproj.GenerateResource.Cache
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.exe
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.pdb

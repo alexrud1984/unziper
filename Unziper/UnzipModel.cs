@@ -12,8 +12,6 @@ namespace Unziper
     {
         private List<FileInfo> filesList;
 
-        private FileSystemWatcher watcher;
-
         private string targetFolder;
 
         public string TargetFolder
@@ -25,11 +23,8 @@ namespace Unziper
 
             set
             {
- //               WindowsEventsDetach();
                 targetFolder = value;
                 watcher.Path = value;
- //               WindowsEventsAttach();
-                watcher.EnableRaisingEvents=true;
                 GetFilesLsit();
             }
         }
@@ -39,19 +34,24 @@ namespace Unziper
         public UnzipModel()
         {
             filesList = new List<FileInfo>();
-            watcher = new FileSystemWatcher();
         }
 
         public event FileUnzippedEventHandler FileUnzipped;
+        public event FileExistsEventHandler FileExists;
 
         public void Unzip()
         {
             foreach (var item in filesList)
             {
-                if (String.Equals(item.Extension,".zip"))
+                if (String.Equals(item.Extension, ".zip"))
                 {
-                    ZipFile.ExtractToDirectory(item.FullName, targetFolder);
-                    FileUnzipped(item.FullName);
+                    ZipArchive za = ZipFile.OpenRead(item.FullName);
+                    FileUnzipped("Start to unzip: " + item.FullName);
+                    foreach (var entry in za.Entries)
+                    {
+                        entry.ExtractToFile(targetFolder+"\\"+entry.Name, true);
+                    }
+                    FileUnzipped("Finish to unzip: " + item.FullName);
                 }
             }
         }
@@ -85,26 +85,13 @@ namespace Unziper
             }
         }
 
-        private void WindowsEventsAttach()
+        private void OnFileExists(string file)
         {
-            if (watcher != null)
+            if (FileExists != null)
             {
-                watcher.Created += Watcher_Created;
+                FileExists(file);
             }
         }
 
-
-        private void WindowsEventsDetach()
-        {
-            if (watcher != null)
-            {
-                watcher.Created -= Watcher_Created;
-            }
-        }
-
-        private void Watcher_Created(object sender, FileSystemEventArgs e)
-        {
-            OnFileUnzipped(e.FullPath);
-        }
     }
 }
