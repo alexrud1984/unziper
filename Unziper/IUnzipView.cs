@@ -12,11 +12,13 @@ namespace Unziper
 
     public interface IUnziperView
     {
-        string TargetFolder { set; get; }
+        string SourceFolder { set; get; }
 
         string UnzippedFile { set; get; }
 
-        event FolderSelectedEventHandler FolderSelected;
+        List<FileCheck> SourceList { set; }
+
+        event FolderSelectedEventHandler SourceFolderSelected;
 
         event UnzipEventHandler Unzipped;
     }

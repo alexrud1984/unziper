@@ -14,15 +14,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FolderPickerLib;
+using System.IO;
 
 namespace Unziper
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    
     public partial class MainWindow : Window, IUnziperView
     {
+        private int index = 0;
+        private List<FileCheck> sourceList;
         FolderPickerDialog fpd = new FolderPickerDialog();
+        public List<FileCheck> SourceList
+        {
+            set
+            {
+                sourceList = value;
+                sourceListView.Items.Clear();
+                sourceListView.ItemsSource=sourceList;
+            }
+        }
 
         public MainWindow()
         {
@@ -30,15 +43,15 @@ namespace Unziper
             UnziperPresenter presenter = new UnziperPresenter(this);
         }
 
-        public string TargetFolder
+        public string SourceFolder
         {
             set
             {
-                textBox.Text = value;
+                sourceTextBox.Text = value;
             }
             get
             {
-                return textBox.Text;
+                return sourceTextBox.Text;
             }
         }
         public string UnzippedFile
@@ -54,14 +67,14 @@ namespace Unziper
             }
         }
 
-        public event FolderSelectedEventHandler FolderSelected;
+        public event FolderSelectedEventHandler SourceFolderSelected;
         public event UnzipEventHandler Unzipped;
 
         private void OnFolderSelected()
         {
-            if (FolderSelected != null)
+            if (SourceFolderSelected != null)
             {
-                FolderSelected(this);
+                SourceFolderSelected(this);
             }
         }
 
@@ -87,12 +100,46 @@ namespace Unziper
 
         private void browseButton_Click(object sender, RoutedEventArgs e)
         {
-            fpd.ShowDialog();
-            if ((bool)fpd.DialogResult)
+            /*            fpd.ShowDialog();
+                        if ((bool)fpd.DialogResult)
+                        {
+                            TargetFolder = fpd.SelectedPath;
+                        }*/
+            if (Directory.Exists(SourceFolder))
             {
-                TargetFolder = fpd.SelectedPath;
+                OnFolderSelected();
             }
-            OnFolderSelected();
+            else
+            {
+                MessageBox.Show("Folder not exists");
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox chk = (CheckBox)sender;
+            sourceList[(int)chk.Tag].IsChecked = true;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox chk = (CheckBox)sender;
+            sourceList[(int)chk.Tag].IsChecked = false;
+        }
+
+        private void sourceListView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e != null && e.Key == Key.Space)
+            {
+                index = sourceListView.SelectedIndex;
+                if (index >=0 && index<sourceList.Count)
+                {
+                    Keyboard.DefaultRestoreFocusMode = RestoreFocusMode.Auto;
+                    sourceList[index].IsChecked ^= true;
+                    sourceListView.Items.Refresh();
+                    sourceListView.SelectedIndex = index;
+                }
+            }
         }
 
     }

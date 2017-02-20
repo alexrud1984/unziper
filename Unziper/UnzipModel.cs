@@ -24,7 +24,6 @@ namespace Unziper
             set
             {
                 targetFolder = value;
-                watcher.Path = value;
                 GetFilesLsit();
             }
         }
