@@ -15,13 +15,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FolderPickerLib;
 using System.IO;
+using System.Windows.Threading;
 
 namespace Unziper
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
     public partial class MainWindow : Window, IUnziperView
     {
         private int index = 0;
@@ -33,7 +33,17 @@ namespace Unziper
             {
                 sourceList = value;
                 sourceListView.Items.Clear();
-                sourceListView.ItemsSource=sourceList;
+                FillSourceView();
+            }
+        }
+
+        private void FillSourceView()
+        {
+            foreach (var item in sourceList)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Content = item;
+                sourceListView.Items.Add(lvi);
             }
         }
 
@@ -134,13 +144,16 @@ namespace Unziper
                 index = sourceListView.SelectedIndex;
                 if (index >=0 && index<sourceList.Count)
                 {
-                    Keyboard.DefaultRestoreFocusMode = RestoreFocusMode.Auto;
                     sourceList[index].IsChecked ^= true;
-                    sourceListView.Items.Refresh();
-                    sourceListView.SelectedIndex = index;
+                    ListViewItem lvi = new ListViewItem();
+                    lvi.Content = sourceList[index];
+                    lvi.IsSelected = true;
+                    sourceListView.Items[index] = lvi;
+                    ListViewItem item = sourceListView.ItemContainerGenerator.ContainerFromIndex(index) as ListViewItem;
+                    item.Focus();
                 }
+
             }
         }
-
     }
 }

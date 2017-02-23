@@ -41,7 +41,7 @@
                 <Button x:Name="unzipButton" Content="Unzip" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75"/>
             </StackPanel>
         </DockPanel>
-        <Grid ShowGridLines="False" Margin="10,69,-2,10" RenderTransformOrigin="0.442,0.502">
+        <Grid x:Name="ListGrid" ShowGridLines="False" Margin="10,69,-2,10" RenderTransformOrigin="0.442,0.502">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -53,9 +53,10 @@
                         SelectionMode="Single"
                         KeyUp="sourceListView_KeyUp" 
                         Focusable="True"
+                        VirtualizingPanel.IsVirtualizing="False"
                         >
                 <ListView.View>
-                    <GridView>
+                    <GridView x:Name="gridView">
                         <GridView.Columns>  
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
