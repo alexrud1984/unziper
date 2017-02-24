@@ -24,26 +24,33 @@ namespace Unziper
     /// </summary>
     public partial class MainWindow : Window, IUnziperView
     {
-        private int index = 0;
-        private List<FileCheck> sourceList;
-        FolderPickerDialog fpd = new FolderPickerDialog();
-        public List<FileCheck> SourceList
+        private List<FileListView> sourceList;
+        public List<FileListView> SourceList
         {
             set
             {
                 sourceList = value;
-                sourceListView.Items.Clear();
                 FillSourceView();
+            }
+
+            get
+            {
+                return sourceList;
             }
         }
 
         private void FillSourceView()
         {
+            sourceListView.Items.Clear();
             foreach (var item in sourceList)
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Content = item;
                 sourceListView.Items.Add(lvi);
+            }
+            if (sourceListView.Items.Count != 0)
+            {
+                sourceListView.Focus();
             }
         }
 
@@ -77,10 +84,42 @@ namespace Unziper
             }
         }
 
-        public event FolderSelectedEventHandler SourceFolderSelected;
-        public event UnzipEventHandler Unzipped;
+        public string TargetFolder
+        {
+            get
+            {
+                return targetTextBox.Text;
+            }
 
-        private void OnFolderSelected()
+            set
+            {
+                targetTextBox.Text = value;
+            }
+        }
+
+        public event SourceFolderSelectedEventHandler SourceFolderSelected;
+        public event UnzipClickEventHandler UnzippedClick;
+        public event TargetFolderSelectedEventHandler TargetFolderSelected;
+        public event CopyClickEventHandler CopyClick;
+        public event ItemCheckEventHandler ItemCheckChanged;
+
+        private void OnCopyClick()
+        {
+            if (CopyClick != null)
+            {
+                CopyClick();
+            }
+        }
+
+        private void OnItemCheckChange(int id, bool isChecked)
+        {
+            if (ItemCheckChanged != null)
+            {
+                ItemCheckChanged(id, isChecked);
+            }
+        }
+
+        private void OnSourceSelected()
         {
             if (SourceFolderSelected != null)
             {
@@ -90,9 +129,17 @@ namespace Unziper
 
         private void OnUnzipped()
         {
-            if (Unzipped != null)
+            if (UnzippedClick != null)
             {
-                Unzipped(this);
+                UnzippedClick(this);
+            }
+        }
+
+        private void OnTargetSelected()
+        {
+            if (TargetFolderSelected != null)
+            {
+                TargetFolderSelected(TargetFolder);
             }
         }
 
@@ -108,16 +155,11 @@ namespace Unziper
             OnUnzipped();
         }
 
-        private void browseButton_Click(object sender, RoutedEventArgs e)
+        private void sourceButton_Click(object sender, RoutedEventArgs e)
         {
-            /*            fpd.ShowDialog();
-                        if ((bool)fpd.DialogResult)
-                        {
-                            TargetFolder = fpd.SelectedPath;
-                        }*/
             if (Directory.Exists(SourceFolder))
             {
-                OnFolderSelected();
+                OnSourceSelected();
             }
             else
             {
@@ -129,31 +171,98 @@ namespace Unziper
         {
             CheckBox chk = (CheckBox)sender;
             sourceList[(int)chk.Tag].IsChecked = true;
+            OnItemCheckChange((int)chk.Tag, true);
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
             sourceList[(int)chk.Tag].IsChecked = false;
+            OnItemCheckChange((int)chk.Tag, false);
         }
 
         private void sourceListView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e != null && e.Key == Key.Space)
             {
-                index = sourceListView.SelectedIndex;
-                if (index >=0 && index<sourceList.Count)
-                {
-                    sourceList[index].IsChecked ^= true;
-                    ListViewItem lvi = new ListViewItem();
-                    lvi.Content = sourceList[index];
-                    lvi.IsSelected = true;
-                    sourceListView.Items[index] = lvi;
-                    ListViewItem item = sourceListView.ItemContainerGenerator.ContainerFromIndex(index) as ListViewItem;
-                    item.Focus();
-                }
-
+                ChangeCheckedState();
             }
+        }
+
+        private void sourceListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ListView lv = sender as ListView;
+            if(lv != null)
+            {
+                ChangeCheckedState();
+            }
+
+        }
+
+        private void ChangeCheckedState()
+        {
+            int index = 0;
+            index = sourceListView.SelectedIndex;
+            if (index >= 0 && index < sourceList.Count)
+            {
+                sourceList[index].IsChecked ^= true;
+                ListViewItem lvi = new ListViewItem();
+                lvi.Content = sourceList[index];
+                lvi.IsSelected = true;
+                sourceListView.Items[index] = lvi;
+                ListViewItem item = sourceListView.ItemContainerGenerator.ContainerFromIndex(index) as ListViewItem;
+                item.Focus();
+                OnItemCheckChange(sourceList[index].Id, sourceList[index].IsChecked);
+            }
+        }
+
+        private void Header_CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sourceList != null)
+            {
+                foreach (var item in sourceList)
+                {
+                    item.IsChecked = true;
+                    OnItemCheckChange(item.Id, item.IsChecked);
+                }
+                sourceListView.Items.Clear();
+                FillSourceView();
+            }
+
+        }
+
+        private void Header_CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sourceList != null)
+            {
+                foreach (var item in sourceList)
+                {
+                    item.IsChecked = false;
+                    OnItemCheckChange(item.Id, item.IsChecked);
+                }
+                sourceListView.Items.Clear();
+                FillSourceView();
+            }
+        }
+
+        private void targetButton_Click(object sender, RoutedEventArgs e)
+        {
+            FolderPickerDialog fpd = new FolderPickerDialog();
+            fpd.ShowDialog();
+            if ((bool)fpd.DialogResult)
+            {
+                TargetFolder = fpd.SelectedPath;
+            }
+        }
+
+        public void ShowMessage(string msg)
+        {
+            MessageBox.Show(msg);
+        }
+
+        private void copyButton_Click(object sender, RoutedEventArgs e)
+        {
+            OnCopyClick();
         }
     }
 }

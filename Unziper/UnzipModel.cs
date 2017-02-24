@@ -35,8 +35,7 @@ namespace Unziper
             filesList = new List<FileInfo>();
         }
 
-        public event FileUnzippedEventHandler FileUnzipped;
-        public event FileExistsEventHandler FileExists;
+        public event FileUnzippedEventHandler ActionData;
 
         public void Unzip()
         {
@@ -45,12 +44,12 @@ namespace Unziper
                 if (String.Equals(item.Extension, ".zip"))
                 {
                     ZipArchive za = ZipFile.OpenRead(item.FullName);
-                    FileUnzipped("Start to unzip: " + item.FullName);
+                    ActionData("Start to unzip: " + item.FullName);
                     foreach (var entry in za.Entries)
                     {
                         entry.ExtractToFile(targetFolder+"\\"+entry.Name, true);
                     }
-                    FileUnzipped("Finish to unzip: " + item.FullName);
+                    ActionData("Finish to unzip: " + item.FullName);
                 }
             }
         }
@@ -78,19 +77,101 @@ namespace Unziper
 
         private void OnFileUnzipped(string file)
         {
-            if (FileUnzipped != null)
+            if (ActionData != null)
             {
-                FileUnzipped(file);
+                ActionData(file);
             }
         }
 
-        private void OnFileExists(string file)
+        public async void Copy(List<FileCheck> sourceFiles)
         {
-            if (FileExists != null)
+            foreach (var item in sourceFiles)
             {
-                FileExists(file);
+                if (item.IsChecked)
+                {
+                    if (item.IsDirectory)
+                    {
+                        DirectoryInfo di = new DirectoryInfo(item.FullName);
+                        if (!System.IO.Directory.Exists(Path.Combine(targetFolder, di.Name)))
+                        {
+                            try
+                            {
+                                ActionData("Copy folder: " + di.FullName);
+                                Directory.CreateDirectory(Path.Combine(targetFolder, di.Name));
+                            }
+                            catch (Exception ex)
+                            {
+                                ActionData(ex.Message);
+                            }
+                        }
+
+                        DirectoryCopy(item.FullName, Path.Combine(targetFolder, di.Name));
+                    }
+                    else
+                    {
+                        try
+                        {
+                            ActionData("Start copy: " + item.FullName);
+                            await CopyFileAsync(item.FullName, Path.Combine(targetFolder, item.Name));
+                            //                           File.Copy(item.FullName, Path.Combine(targetFolder,item.Name), true);
+                            ActionData("File copied: " + item.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            ActionData(ex.Message);
+                        }
+                    }
+                }
             }
         }
 
+        private async void DirectoryCopy(string source, string target)
+        {
+            //files copy
+            foreach (var item in Directory.GetFiles(source))
+            {
+                try
+                {
+                    ActionData("Start copy: " + item);
+                    FileInfo fi = new FileInfo(item);
+                    await CopyFileAsync(item, Path.Combine(target, fi.Name));
+                    ActionData("File copied: " + item);
+                }
+                catch (Exception ex)
+                {
+                    ActionData(ex.Message);
+                }
+            }
+
+            //subdirs copy
+            foreach (var item in Directory.GetDirectories(source))
+            {
+                DirectoryInfo di = new DirectoryInfo(item);
+                if (!System.IO.Directory.Exists(Path.Combine(target, di.Name)))
+                {
+                    try
+                    {
+                        ActionData("Copy folder: " + di.FullName);
+                        Directory.CreateDirectory(Path.Combine(target, di.Name));
+                    }
+                    catch (Exception ex)
+                    {
+                        ActionData(ex.Message);
+                    }
+                }
+                DirectoryCopy(item, Path.Combine(target, di.Name));
+            }
+        }
+
+        public async Task CopyFileAsync(string sourcePath, string destinationPath)
+        {
+            using (Stream source = File.Open(sourcePath, FileMode.Open))
+            {
+                using (Stream destination = File.Create(destinationPath))
+                {
+                    await source.CopyToAsync(destination);
+                }
+            }
+        }
     }
 }

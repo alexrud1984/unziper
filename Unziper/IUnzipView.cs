@@ -6,20 +6,41 @@ using System.Threading.Tasks;
 
 namespace Unziper
 {
-    public delegate void FolderSelectedEventHandler(IUnziperView sender);
+    public delegate void SourceFolderSelectedEventHandler(IUnziperView sender);
 
-    public delegate void UnzipEventHandler(IUnziperView sender);
+    public delegate void TargetFolderSelectedEventHandler(string targetFolder);
+
+    public delegate void UnzipClickEventHandler(IUnziperView sender);
+
+    public delegate void CopyClickEventHandler();
+
+    public delegate void ItemCheckEventHandler(int id, bool isChecked);
+
+
+
 
     public interface IUnziperView
     {
         string SourceFolder { set; get; }
 
+        string TargetFolder { set; get; }
+
         string UnzippedFile { set; get; }
 
-        List<FileCheck> SourceList { set; }
+        List<FileListView> SourceList { set; }
 
-        event FolderSelectedEventHandler SourceFolderSelected;
 
-        event UnzipEventHandler Unzipped;
+        event SourceFolderSelectedEventHandler SourceFolderSelected;
+
+        event TargetFolderSelectedEventHandler TargetFolderSelected;
+
+        event UnzipClickEventHandler UnzippedClick;
+
+        event CopyClickEventHandler CopyClick;
+
+        event ItemCheckEventHandler ItemCheckChanged;
+
+
+        void ShowMessage(string msg);
     }
 }

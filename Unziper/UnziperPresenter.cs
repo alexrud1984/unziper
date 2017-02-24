@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,8 @@ namespace Unziper
     {
         private IUnziperView view;
         private IUnzipModel model;
-        private List<FileCheck> sourceListView = new List<FileCheck>();
-        private List<FileCheck> targetListView = new List<FileCheck>();
+        private List<FileCheck> sourceFilesList = new List<FileCheck>();
+        private List<FileListView> sourceFilesView = new List<FileListView>();
 
         public UnziperPresenter(IUnziperView view)
         {
@@ -24,13 +25,7 @@ namespace Unziper
 
         private void AttachUziperModel(IUnzipModel model)
         {
-            model.FileUnzipped += Model_FileUnzipped;
-            model.FileExists += Model_FileExists;
-        }
-
-        private void Model_FileExists(string sender)
-        {
-            view.UnzippedFile = "File already exists "+sender;
+            model.ActionData += Model_FileUnzipped;
         }
 
         private void Model_FileUnzipped(string sender)
@@ -41,38 +36,134 @@ namespace Unziper
         private void AttachUnziperView(IUnziperView view)
         {
             view.SourceFolderSelected += View_SourceFolderSelected;
-            view.Unzipped += View_Unzip;
+            view.TargetFolderSelected += View_TargetFolderSelected;
+            view.UnzippedClick += View_Unzip;
+            view.CopyClick += View_CopyClick;
+            view.ItemCheckChanged += View_ItemCheckChanged;
+        }
+
+        private void View_ItemCheckChanged(int id, bool isChecked)
+        {
+            foreach (var item in sourceFilesList)
+            {
+                if (item.Id == id)
+                {
+                    item.IsChecked = isChecked;
+                    break;
+                }
+            }
+            foreach (var item in sourceFilesView)
+            {
+                if (item.Id == id)
+                {
+                    item.IsChecked = isChecked;
+                    break;
+                }
+            }
+        }
+
+        private void View_CopyClick()
+        {
+            if (!System.IO.Directory.Exists(view.SourceFolder))
+            {
+                view.ShowMessage("Source folder doesn't exsists or field is empty.");
+                return;
+            }
+            if (!System.IO.Directory.Exists(view.TargetFolder))
+            {
+                view.ShowMessage("Traget folder doesn't exsists or field is empty.");
+                return;
+            }
+            model.TargetFolder = view.TargetFolder;
+            model.Copy(sourceFilesList);
+        }
+
+        private void View_TargetFolderSelected(string targetFolder)
+        {
+            DirectoryInfo di = new DirectoryInfo(targetFolder);
+            if (di.Exists)
+            {
+                model.TargetFolder = targetFolder;
+            }
+            else
+            {
+                view.ShowMessage("Selected target folder doesn't exist!");
+            }
         }
 
         private void View_SourceFolderSelected(IUnziperView sender)
         {
-            sourceListView.Clear();
-            if (String.IsNullOrWhiteSpace(sender.SourceFolder))
+            sourceFilesList.Clear();
+            SourceFilesListLoad(sender.SourceFolder);
+            sourceFilesView.Clear();
+            SourceFilesViewLoad();
+            sender.SourceList = sourceFilesView;
+        }
+
+        private void SourceFilesViewLoad()
+        {
+            if (sourceFilesList != null)
+            {
+                foreach (var item in sourceFilesList)
+                {
+                    System.Windows.Media.ImageSource fileIcon;
+                    if (item.IsDirectory)
+                    {
+                        using (System.Drawing.Icon sysicon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FolderClosed.ico")))
+                        {
+                            fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                      sysicon.Handle,
+                                      System.Windows.Int32Rect.Empty,
+                                      System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                        }
+                    }
+                    else
+                    {
+                        using (System.Drawing.Icon sysicon = System.Drawing.Icon.ExtractAssociatedIcon(item.FullName))
+                        {
+                            fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                      sysicon.Handle,
+                                      System.Windows.Int32Rect.Empty,
+                                      System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                        }
+                    }
+                    sourceFilesView.Add(new FileListView(item.Id, item.Name, fileIcon, item.IsChecked));
+                }
+            }
+        }
+
+        private void SourceFilesListLoad(string sourceFolder)
+        {
+            if (String.IsNullOrWhiteSpace(sourceFolder))
             {
                 return;
             }
             try
             {
                 int i = 0;
-                foreach (var item in Directory.GetDirectories(sender.SourceFolder))
+                foreach (var item in Directory.GetDirectories(sourceFolder))
                 {
                     DirectoryInfo di = new DirectoryInfo(item);
-                    sourceListView.Add(new FileCheck(i, di.FullName, di.Name, true));
-                    i++;
+                    if (System.IO.Directory.Exists(item))
+                    {
+                        sourceFilesList.Add(new FileCheck(i, di.FullName, di.Name, false, true));
+                        i++;
+                    }
                 }
-                foreach (var item in Directory.GetFiles(sender.SourceFolder))
+                foreach (var item in Directory.GetFiles(sourceFolder))
                 {
-                    FileInfo fi = new FileInfo(item);
-                    sourceListView.Add(new FileCheck(i, fi.FullName, fi.Name, true));
-                    i++;
+                    if (System.IO.File.Exists(item))
+                    {
+                        FileInfo fi = new FileInfo(item);
+                        sourceFilesList.Add(new FileCheck(i, fi.FullName, fi.Name, false, false));
+                        i++;
+                    }
                 }
             }
             catch (Exception)
             {
-                //to do
+                view.ShowMessage("Something went wrong. Please try again.");
             }
-            sender.SourceList = sourceListView;
-            //            model.TargetFolder = sender.SourceFolder;
         }
 
         private void View_Unzip(IUnziperView sender)

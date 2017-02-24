@@ -33,12 +33,12 @@
                 <TextBox x:Name="targetTextBox" Height="26" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="773"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="88">
-                <Button x:Name="browseButton" Content="Get list" Height="26" VerticalAlignment="Top" Click="browseButton_Click"/>
-                <Button x:Name="sourceBrowseButton" Content="Browse" Height="26" VerticalAlignment="Top" Click="browseButton_Click" HorizontalAlignment="Right" Width="88"/>
+                <Button x:Name="sourceButton" Content="Get list" Height="26" VerticalAlignment="Top" Click="sourceButton_Click"/>
+                <Button x:Name="targetButton" Content="Browse" Height="26" VerticalAlignment="Top" Click="targetButton_Click"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="90">
-                <Button x:Name="copyButton" Content="Copy" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Click="unzipButton_Click"/>
-                <Button x:Name="unzipButton" Content="Unzip" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75"/>
+                <Button x:Name="copyButton" Content="Copy" Height="26" VerticalAlignment="Top" Click="copyButton_Click"/>
+                <Button x:Name="unzipButton" Content="Unzip" Height="26" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75"/>
             </StackPanel>
         </DockPanel>
         <Grid x:Name="ListGrid" ShowGridLines="False" Margin="10,69,-2,10" RenderTransformOrigin="0.442,0.502">
@@ -53,12 +53,19 @@
                         SelectionMode="Single"
                         KeyUp="sourceListView_KeyUp" 
                         Focusable="True"
-                        VirtualizingPanel.IsVirtualizing="False"
+                        VirtualizingPanel.IsVirtualizing="False" 
+                        MouseLeftButtonUp="sourceListView_MouseLeftButtonUp"
                         >
                 <ListView.View>
                     <GridView x:Name="gridView">
-                        <GridView.Columns>  
+                        <GridView.Columns>
                             <GridViewColumn>
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Checked="Header_CheckBox_Checked"  
+                                                  Unchecked="Header_CheckBox_Unchecked"/>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox 
@@ -74,7 +81,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn>
-                                <GridViewColumn.CellTemplate>
+                                <GridViewColumn.CellTemplate >
                                     <DataTemplate>
                                         <Image Width="16" Height="16" Source="{Binding FileIcon}" Focusable="False"/>
                                     </DataTemplate>

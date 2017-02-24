@@ -16,10 +16,10 @@ namespace Unziper
 
         string UnzippedFile { set; get; }
 
-        event FileUnzippedEventHandler FileUnzipped;
-
-        event FileExistsEventHandler FileExists;
+        event FileUnzippedEventHandler ActionData;
 
         void Unzip();
+
+        void Copy(List<FileCheck> sourceFiles);
     }
 }

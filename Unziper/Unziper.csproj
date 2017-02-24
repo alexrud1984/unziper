@@ -67,9 +67,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FileCheck.cs" />
+    <Compile Include="FileList.cs" />
+    <Compile Include="FlieListView.cs" />
     <Compile Include="FolderDialog.cs" />
     <Compile Include="IUnzipModel.cs" />
-    <Compile Include="MyCheckBox.cs" />
     <Compile Include="UnziperPresenter.cs" />
     <Compile Include="UnzipModel.cs" />
     <Page Include="MainWindow.xaml">
