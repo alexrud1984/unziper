@@ -253,6 +253,7 @@ namespace Unziper
             {
                 TargetFolder = fpd.SelectedPath;
             }
+            OnTargetSelected();
         }
 
         public void ShowMessage(string msg)

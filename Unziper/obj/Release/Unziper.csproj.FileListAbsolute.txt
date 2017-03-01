@@ -12,3 +12,4 @@ D:\Projects\Unziper\Unziper\obj\Release\Unziper.Properties.Resources.resources
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.csproj.GenerateResource.Cache
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.exe
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.pdb
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.csprojResolveAssemblyReference.cache

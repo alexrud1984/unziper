@@ -26,6 +26,12 @@ namespace Unziper
         private void AttachUziperModel(IUnzipModel model)
         {
             model.ActionData += Model_FileUnzipped;
+            model.UnzipFinished += Model_UnzipFinished;
+        }
+
+        private void Model_UnzipFinished(string sender)
+        {
+            view.ShowMessage("Done!");
         }
 
         private void Model_FileUnzipped(string sender)

@@ -8,7 +8,7 @@ namespace Unziper
 {
     public delegate void FileUnzippedEventHandler(string sender);
 
-    public delegate void FileExistsEventHandler(string sender);
+    public delegate void UnzipFinishedEventHandler(string sender);
 
     public interface IUnzipModel
     {
@@ -17,6 +17,8 @@ namespace Unziper
         string UnzippedFile { set; get; }
 
         event FileUnzippedEventHandler ActionData;
+
+        event UnzipFinishedEventHandler UnzipFinished;
 
         void Unzip();
 
