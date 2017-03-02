@@ -42,7 +42,7 @@ namespace Unziper
         private void Model_UnzipFinished(string sender)
         {
             view.Status = "Finished to unzip";
-            view.ShowMessage("Done!");
+            view.ShowMessage("Done! Put the SQL package in relevant folder.");
         }
 
         private void Model_FileUnzipped(string sender)
