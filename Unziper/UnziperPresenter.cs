@@ -27,16 +27,27 @@ namespace Unziper
         {
             model.ActionData += Model_FileUnzipped;
             model.UnzipFinished += Model_UnzipFinished;
+            model.CopyingFinised += Model_CopyingFinised;
+        }
+
+        private void Model_CopyingFinised()
+        {
+            view.Status="Finished to copy";
+            if (view.AutoUnzip)
+            {
+                View_Unzip(view);
+            }
         }
 
         private void Model_UnzipFinished(string sender)
         {
+            view.Status = "Finished to unzip";
             view.ShowMessage("Done!");
         }
 
         private void Model_FileUnzipped(string sender)
         {
-            view.UnzippedFile = sender;
+            view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", DateTime.Now, sender);
         }
 
         private void AttachUnziperView(IUnziperView view)
@@ -70,6 +81,7 @@ namespace Unziper
 
         private void View_CopyClick()
         {
+            view.Status = "Copying...";
             if (!System.IO.Directory.Exists(view.SourceFolder))
             {
                 view.ShowMessage("Source folder doesn't exsists or field is empty.");
@@ -174,6 +186,8 @@ namespace Unziper
 
         private void View_Unzip(IUnziperView sender)
         {
+            view.Status = "Unzipping...";
+            View_TargetFolderSelected(view.TargetFolder);
             model.Unzip();
         }
     }

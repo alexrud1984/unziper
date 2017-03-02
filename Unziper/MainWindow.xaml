@@ -20,7 +20,7 @@
                 <Label x:Name="label" Content="Source folder:" VerticalAlignment="Top" Height="26" Background="{x:Null}" FontFamily="Trebuchet MS" FontSize="14"/>
                 <Label x:Name="label_Copy" Content="Target folder:" VerticalAlignment="Top" Height="26" Background="{x:Null}" FontFamily="Trebuchet MS" FontSize="14"/>
             </StackPanel>
-            <StackPanel Height="53" VerticalAlignment="Top" Width="783" RenderTransformOrigin="0.5,0.5">
+            <StackPanel Height="53" VerticalAlignment="Top" Width="632" RenderTransformOrigin="0.5,0.5">
                 <StackPanel.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -29,19 +29,20 @@
                         <TranslateTransform/>
                     </TransformGroup>
                 </StackPanel.RenderTransform>
-                <TextBox x:Name="sourceTextBox" Height="26" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Margin="0,0,10,0"/>
-                <TextBox x:Name="targetTextBox" Height="26" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="773"/>
+                <TextBox x:Name="sourceTextBox" Height="25" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                <TextBox x:Name="targetTextBox" Height="28" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="632" IsReadOnly="True"/>
             </StackPanel>
-            <StackPanel Height="53" VerticalAlignment="Top" Width="88">
-                <Button x:Name="sourceButton" Content="Get list" Height="26" VerticalAlignment="Top" Click="sourceButton_Click"/>
-                <Button x:Name="targetButton" Content="Browse" Height="26" VerticalAlignment="Top" Click="targetButton_Click"/>
+            <StackPanel Height="53" VerticalAlignment="Top" Width="87">
+                <Button x:Name="sourceButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="sourceButton_Click" Margin="10,0,0,0"/>
+                <Button x:Name="targetButton" Content="Browse" Height="25" VerticalAlignment="Top" Click="targetButton_Click" Margin="10,0,0,0"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="90">
-                <Button x:Name="copyButton" Content="Copy" Height="26" VerticalAlignment="Top" Click="copyButton_Click"/>
-                <Button x:Name="unzipButton" Content="Unzip" Height="26" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75"/>
+                <Button x:Name="copyButton" Content="Copy" Height="25" VerticalAlignment="Top" Click="copyButton_Click" Background="#FF07C2EC" Margin="10,0"/>
+                <Button x:Name="unzipButton" Content="Unzip" Height="25" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75" Background="#FF07C2EC" Margin="10,0"/>
             </StackPanel>
+            <CheckBox x:Name="autoUnzipCheckBox" Content="Unzip after copy" Width="117" Margin="0,10" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black"/>
         </DockPanel>
-        <Grid x:Name="ListGrid" ShowGridLines="False" Margin="10,69,-2,10" RenderTransformOrigin="0.442,0.502">
+        <Grid x:Name="ListGrid" ShowGridLines="False" Margin="10,68,-2,10" RenderTransformOrigin="0.442,0.502">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -95,10 +96,10 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <ListView x:Name="filesListView" Margin="5,7,10,12" RenderTransformOrigin="0.5,0.5" IsSynchronizedWithCurrentItem="True" Background="#FFCBF9FD" ClipToBounds="True" Grid.Column="1">
+            <ListView x:Name="filesListView" SelectionMode="Single" Margin="5,7,10,12" RenderTransformOrigin="0.5,0.5" IsSynchronizedWithCurrentItem="True" Background="#FFCBF9FD" ClipToBounds="True" Grid.Column="1" Height="Auto">
                 <ListView.View>
                     <GridView AllowsColumnReorder="False">
-                        <GridViewColumn/>
+                        <GridViewColumn x:Name="actionColumn" Header="Action"/>
                     </GridView>
                 </ListView.View>
             </ListView>

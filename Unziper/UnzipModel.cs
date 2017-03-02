@@ -37,6 +37,7 @@ namespace Unziper
 
         public event FileUnzippedEventHandler ActionData;
         public event UnzipFinishedEventHandler UnzipFinished;
+        public event CopyingFinisedEventHandler CopyingFinised;
 
         public async void Unzip()
         {
@@ -50,16 +51,23 @@ namespace Unziper
                     ActionData("Start to unzip: " + item.FullName);
                     foreach (var entry in za.Entries)
                     {
-                        string toFolder = Path.Combine(targetFolder,entry.FullName.Remove(entry.FullName.Length - entry.Name.Length-1));
-                        if (!Directory.Exists(toFolder))
+                        try
                         {
-                            Directory.CreateDirectory(toFolder);
-                            ActionData("Folder created" + toFolder);
+                            string toFolder = Path.Combine(targetFolder, entry.FullName.Remove(entry.FullName.Length - entry.Name.Length - 1));
+                            if (!Directory.Exists(toFolder))
+                            {
+                                Directory.CreateDirectory(toFolder);
+                                ActionData("Folder created" + toFolder);
+                            }
+                            if (!String.IsNullOrEmpty(entry.Name))
+                            {
+                                ActionData("Extracting file: " + entry.FullName + " ...");
+                                await Task.Run(() => entry.ExtractToFile(targetFolder + "\\" + entry.FullName, true));
+                            }
                         }
-                        if (!String.IsNullOrEmpty(entry.Name))
+                        catch (Exception ex)
                         {
-                            ActionData("Extracting file: " + entry.FullName+ " ...");
-                            await Task.Run(() => entry.ExtractToFile(targetFolder + "\\" + entry.FullName, true));
+                            ActionData("ERROR " + ex.Message);
                         }
                     }
                     ActionData("Finish to unzip: " + item.FullName);
@@ -105,6 +113,14 @@ namespace Unziper
             }
         }
 
+        private void OnCopyingFinised()
+        {
+            if (CopyingFinised != null)
+            {
+                CopyingFinised();
+            }
+        }
+
         public async void Copy(List<FileCheck> sourceFiles)
         {
             foreach (var item in sourceFiles)
@@ -123,7 +139,7 @@ namespace Unziper
                             }
                             catch (Exception ex)
                             {
-                                ActionData(ex.Message);
+                                ActionData("ERROR " + ex.Message);
                             }
                         }
 
@@ -139,11 +155,12 @@ namespace Unziper
                         }
                         catch (Exception ex)
                         {
-                            ActionData(ex.Message);
+                            ActionData("ERROR " + ex.Message);
                         }
                     }
                 }
             }
+            OnCopyingFinised();
             ActionData("Copying finished!");
         }
 
@@ -161,7 +178,7 @@ namespace Unziper
                 }
                 catch (Exception ex)
                 {
-                    ActionData(ex.Message);
+                    ActionData("ERROR " + ex.Message);
                 }
             }
 
@@ -178,7 +195,7 @@ namespace Unziper
                     }
                     catch (Exception ex)
                     {
-                        ActionData(ex.Message);
+                        ActionData("ERROR " + ex.Message);
                     }
                 }
                 DirectoryCopy(item, Path.Combine(target, di.Name));

@@ -10,6 +10,8 @@ namespace Unziper
 
     public delegate void UnzipFinishedEventHandler(string sender);
 
+    public delegate void CopyingFinisedEventHandler();
+
     public interface IUnzipModel
     {
         string TargetFolder { set; get; }
@@ -19,6 +21,8 @@ namespace Unziper
         event FileUnzippedEventHandler ActionData;
 
         event UnzipFinishedEventHandler UnzipFinished;
+
+        event CopyingFinisedEventHandler CopyingFinised;
 
         void Unzip();
 

@@ -27,6 +27,10 @@ namespace Unziper
 
         string UnzippedFile { set; get; }
 
+        string Status { set; get; }
+
+        bool AutoUnzip { set; get; }
+
         List<FileListView> SourceList { set; }
 
 

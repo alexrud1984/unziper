@@ -97,6 +97,32 @@ namespace Unziper
             }
         }
 
+        public string Status
+        {
+            get
+            {
+                return actionColumn.Header.ToString();
+            }
+
+            set
+            {
+                actionColumn.Header=value;
+            }
+        }
+
+        public bool AutoUnzip 
+        {
+            get
+            {
+                return (bool)autoUnzipCheckBox.IsChecked;
+            }
+
+            set
+            {
+                autoUnzipCheckBox.IsChecked=value;
+            }
+        }
+
         public event SourceFolderSelectedEventHandler SourceFolderSelected;
         public event UnzipClickEventHandler UnzippedClick;
         public event TargetFolderSelectedEventHandler TargetFolderSelected;
@@ -147,7 +173,11 @@ namespace Unziper
         {
             ListViewItem lvi = new ListViewItem();
             lvi.Content = filePath;
+            lvi.Height = 25;
             filesListView.Items.Add(lvi);
+            filesListView.SelectedIndex = filesListView.Items.Count - 1;
+            actionColumn.Width = filesListView.ActualWidth;
+            filesListView.ScrollIntoView(filesListView.SelectedItem);
         }
 
         private void unzipButton_Click(object sender, RoutedEventArgs e)
@@ -265,5 +295,6 @@ namespace Unziper
         {
             OnCopyClick();
         }
+
     }
 }
