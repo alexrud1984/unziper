@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ionic.Zip;
 
 namespace Unziper
 {
@@ -24,7 +24,6 @@ namespace Unziper
             set
             {
                 targetFolder = value;
-                GetFilesLsit();
             }
         }
 
@@ -41,60 +40,26 @@ namespace Unziper
 
         public async void Unzip()
         {
-            foreach (var item in filesList)
+            DirectoryInfo diTarget = new DirectoryInfo(targetFolder);
+            foreach (var item in diTarget.GetFiles("*.zip"))
             {
-
-                if (String.Equals(item.Extension, ".zip"))
+                ZipFile zf = ZipFile.Read(item.FullName);
+                ActionData("Start to unzip: " + item.FullName);
+                foreach (var entry in zf.Entries)
                 {
-                    DirectoryInfo di = new DirectoryInfo(item.FullName);
-                    ZipArchive za = ZipFile.OpenRead(item.FullName);
-                    ActionData("Start to unzip: " + item.FullName);
-                    foreach (var entry in za.Entries)
+                    try
                     {
-                        try
-                        {
-                            string toFolder = Path.Combine(targetFolder, entry.FullName.Remove(entry.FullName.Length - entry.Name.Length - 1));
-                            if (!Directory.Exists(toFolder))
-                            {
-                                Directory.CreateDirectory(toFolder);
-                                ActionData("Folder created" + toFolder);
-                            }
-                            if (!String.IsNullOrEmpty(entry.Name))
-                            {
-                                ActionData("Extracting file: " + entry.FullName + " ...");
-                                await Task.Run(() => entry.ExtractToFile(targetFolder + "\\" + entry.FullName, true));
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            ActionData("ERROR " + ex.Message);
-                        }
+                        await Task.Run(() => entry.Extract(targetFolder, ExtractExistingFileAction.OverwriteSilently));
+                        ActionData("File extracted: " + entry.FileName);
                     }
-                    ActionData("Finish to unzip: " + item.FullName);
+                    catch (Exception ex)
+                    {
+                        ActionData("ERROR " + ex.Message);
+                    }
                 }
+                ActionData("Finish to unzip: " + item.FullName);
             }
             OnUnzipFinished(targetFolder);
-        }
-
-        private void GetFilesLsit()
-        {
-            if (String.IsNullOrWhiteSpace(targetFolder))
-            {
-                return;
-            }
-            try
-            {
-
-                foreach (var item in Directory.GetFiles(targetFolder))
-                {
-                    filesList.Add(new FileInfo (item));
-                }
-            }
-            catch(Exception)
-            {
-                filesList.Clear();
-                GetFilesLsit();
-            }
         }
 
         private void OnFileUnzipped(string file)
@@ -160,8 +125,8 @@ namespace Unziper
                     }
                 }
             }
-            OnCopyingFinised();
             ActionData("Copying finished!");
+            OnCopyingFinised();
         }
 
         private async void DirectoryCopy(string source, string target)

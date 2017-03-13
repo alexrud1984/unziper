@@ -137,12 +137,25 @@ namespace Unziper
                     }
                     else
                     {
-                        using (System.Drawing.Icon sysicon = System.Drawing.Icon.ExtractAssociatedIcon(item.FullName))
+                        try
                         {
-                            fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                                      sysicon.Handle,
-                                      System.Windows.Int32Rect.Empty,
-                                      System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                            using (System.Drawing.Icon sysicon = System.Drawing.Icon.ExtractAssociatedIcon(item.FullName))
+                            {
+                                fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                          sysicon.Handle,
+                                          System.Windows.Int32Rect.Empty,
+                                          System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            using (System.Drawing.Icon sysicon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FolderClosed.ico")))
+                            {
+                                fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                          sysicon.Handle,
+                                          System.Windows.Int32Rect.Empty,
+                                          System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                            }
                         }
                     }
                     sourceFilesView.Add(new FileListView(item.Id, item.Name, fileIcon, item.IsChecked));

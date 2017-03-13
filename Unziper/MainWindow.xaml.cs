@@ -185,18 +185,6 @@ namespace Unziper
             OnUnzipped();
         }
 
-        private void sourceButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (Directory.Exists(SourceFolder))
-            {
-                OnSourceSelected();
-            }
-            else
-            {
-                MessageBox.Show("Folder not exists");
-            }
-        }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
@@ -296,5 +284,16 @@ namespace Unziper
             OnCopyClick();
         }
 
+        private void getListButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(SourceFolder))
+            {
+                OnSourceSelected();
+            }
+            else
+            {
+                MessageBox.Show("Folder not exists");
+            }
+        }
     }
 }

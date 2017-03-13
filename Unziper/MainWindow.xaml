@@ -33,7 +33,7 @@
                 <TextBox x:Name="targetTextBox" Height="28" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="632" IsReadOnly="True"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="87">
-                <Button x:Name="sourceButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="sourceButton_Click" Margin="10,0,0,0"/>
+                <Button x:Name="getListButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="getListButton_Click" Margin="10,0,0,0"/>
                 <Button x:Name="targetButton" Content="Browse" Height="25" VerticalAlignment="Top" Click="targetButton_Click" Margin="10,0,0,0"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="90">
