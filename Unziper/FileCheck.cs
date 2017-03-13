@@ -13,13 +13,14 @@ namespace Unziper
     {
         public string FullName { set; get; }
 
-        public FileCheck (int id, string fullName, string name, bool isChecked, bool isDir)
+        public FileCheck (int id, string fullName, string name, bool isChecked, bool isDir, string ext)
         {
             this.Id = id;
             this.FullName = fullName;
             this.Name = name;
             this.IsChecked = isChecked;
             this.IsDirectory = isDir;
+            this.Ext = ext;
         }
     }
 }

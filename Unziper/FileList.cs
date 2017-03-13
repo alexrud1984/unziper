@@ -12,5 +12,6 @@ namespace Unziper
         public string Name { set; get; }
         public bool IsChecked { set; get; }
         public bool IsDirectory { set; get; }
+        public string Ext { set; get; }
     }
 }

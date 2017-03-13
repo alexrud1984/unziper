@@ -136,6 +136,18 @@ namespace Unziper
                         }
                     }
                     else
+                    if (String.Equals(item.Ext, ".zip"))
+                    {
+                        using (System.Drawing.Icon sysicon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "zip.ico")))
+                        {
+                            fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                      sysicon.Handle,
+                                      System.Windows.Int32Rect.Empty,
+                                      System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                        }
+
+                    }
+                    else
                     {
                         try
                         {
@@ -149,7 +161,7 @@ namespace Unziper
                         }
                         catch (Exception ex)
                         {
-                            using (System.Drawing.Icon sysicon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FolderClosed.ico")))
+                            using (System.Drawing.Icon sysicon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "default.ico")))
                             {
                                 fileIcon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
                                           sysicon.Handle,
@@ -177,7 +189,7 @@ namespace Unziper
                     DirectoryInfo di = new DirectoryInfo(item);
                     if (System.IO.Directory.Exists(item))
                     {
-                        sourceFilesList.Add(new FileCheck(i, di.FullName, di.Name, false, true));
+                        sourceFilesList.Add(new FileCheck(i, di.FullName, di.Name, false, true, di.Extension));
                         i++;
                     }
                 }
@@ -186,7 +198,7 @@ namespace Unziper
                     if (System.IO.File.Exists(item))
                     {
                         FileInfo fi = new FileInfo(item);
-                        sourceFilesList.Add(new FileCheck(i, fi.FullName, fi.Name, false, false));
+                        sourceFilesList.Add(new FileCheck(i, fi.FullName, fi.Name, false, false, fi.Extension));
                         i++;
                     }
                 }
