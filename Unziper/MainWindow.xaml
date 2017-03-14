@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Unziper"
         mc:Ignorable="d"
-        Title="Unziper" Height="555" Width="1110.333">
+        Title="Unziper" Height="555" Width="1110.333" Icon="FolderClosed.ico" BorderBrush="#FF5FB7E0" Foreground="#FF58B4CF" Background="#FF9AE1EC" OpacityMask="#FF519DD3" WindowStyle="ThreeDBorderWindow" WindowStartupLocation="CenterScreen">
     <Grid>
         <DockPanel Height="53" LastChildFill="False" Margin="10,10,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
             <DockPanel.RenderTransform>
