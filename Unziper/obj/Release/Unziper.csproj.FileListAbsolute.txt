@@ -12,7 +12,6 @@ D:\Projects\Unziper\Unziper\obj\Release\Unziper.Properties.Resources.resources
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.csproj.GenerateResource.Cache
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.exe
 D:\Projects\Unziper\Unziper\obj\Release\Unziper.pdb
-D:\Projects\Unziper\Unziper\obj\Release\Unziper.csprojResolveAssemblyReference.cache
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\bin\Release\Unziper.exe.config
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Release\Unziper.exe
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Release\Unziper.pdb

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Ionic.Zip;
 
@@ -11,8 +12,9 @@ namespace Unziper
     public class UnzipModel : IUnzipModel
     {
         private List<FileInfo> filesList;
-
         private string targetFolder;
+        public CancellationTokenSource UnzipCancelTokenSrc { set; get; }
+        public CancellationTokenSource CopyCancelTokeSrc { set; get; }
 
         public string TargetFolder
         {
@@ -26,7 +28,6 @@ namespace Unziper
                 targetFolder = value;
             }
         }
-
         public string UnzippedFile { set; get; }
 
         public UnzipModel()
@@ -40,6 +41,7 @@ namespace Unziper
 
         public async void Unzip()
         {
+            UnzipCancelTokenSrc = new CancellationTokenSource();
             DirectoryInfo diTarget = new DirectoryInfo(targetFolder);
             foreach (var item in diTarget.GetFiles("*.zip"))
             {
@@ -49,8 +51,18 @@ namespace Unziper
                 {
                     try
                     {
-                        await Task.Run(() => entry.Extract(targetFolder, ExtractExistingFileAction.OverwriteSilently));
+                        await Task.Run(() =>
+                        {
+                            UnzipCancelTokenSrc.Token.ThrowIfCancellationRequested();
+                            entry.Extract(targetFolder, ExtractExistingFileAction.OverwriteSilently);
+                        });
                         ActionData("File extracted: " + entry.FileName);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        ActionData(ex.Message);
+                        UnzipCancelTokenSrc.Dispose();
+                        return;
                     }
                     catch (Exception ex)
                     {
@@ -61,33 +73,9 @@ namespace Unziper
             }
             OnUnzipFinished(targetFolder);
         }
-
-        private void OnFileUnzipped(string file)
-        {
-            if (ActionData != null)
-            {
-                ActionData(file);
-            }
-        }
-
-        private void OnUnzipFinished(string targetFolder)
-        {
-            if (UnzipFinished != null)
-            {
-                UnzipFinished(targetFolder);
-            }
-        }
-
-        private void OnCopyingFinised()
-        {
-            if (CopyingFinised != null)
-            {
-                CopyingFinised();
-            }
-        }
-
         public async void Copy(List<FileCheck> sourceFiles)
         {
+            CopyCancelTokeSrc = new CancellationTokenSource();
             foreach (var item in sourceFiles)
             {
                 if (item.IsChecked)
@@ -114,9 +102,16 @@ namespace Unziper
                     {
                         try
                         {
+                            CopyCancelTokeSrc.Token.ThrowIfCancellationRequested();
                             ActionData("Start copy: " + item.FullName + "...");
                             await CopyFileAsync(item.FullName, Path.Combine(targetFolder, item.Name));
                             ActionData("File copied: " + item.FullName);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            ActionData(ex.Message);
+                            CopyCancelTokeSrc.Dispose();
+                            return;
                         }
                         catch (Exception ex)
                         {
@@ -128,7 +123,39 @@ namespace Unziper
             ActionData("Copying finished!");
             OnCopyingFinised();
         }
+        public void Cancel()
+        {
+            if (UnzipCancelTokenSrc != null)
+            {
+                UnzipCancelTokenSrc.Cancel();
+            }
+            if (CopyCancelTokeSrc != null)
+            {
+                CopyCancelTokeSrc.Cancel();
+            }
+        }
 
+        private void OnFileUnzipped(string file)
+        {
+            if (ActionData != null)
+            {
+                ActionData(file);
+            }
+        }
+        private void OnUnzipFinished(string targetFolder)
+        {
+            if (UnzipFinished != null)
+            {
+                UnzipFinished(targetFolder);
+            }
+        }
+        private void OnCopyingFinised()
+        {
+            if (CopyingFinised != null)
+            {
+                CopyingFinised();
+            }
+        }
         private async void DirectoryCopy(string source, string target)
         {
             //files copy
@@ -166,8 +193,7 @@ namespace Unziper
                 DirectoryCopy(item, Path.Combine(target, di.Name));
             }
         }
-
-        public async Task CopyFileAsync(string sourcePath, string destinationPath)
+        private async Task CopyFileAsync(string sourcePath, string destinationPath)
         {
             using (Stream source = File.OpenRead(sourcePath))
             {

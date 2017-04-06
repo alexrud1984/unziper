@@ -20,7 +20,7 @@
                 <Label x:Name="label" Content="Source folder:" VerticalAlignment="Top" Height="26" Background="{x:Null}" FontFamily="Trebuchet MS" FontSize="14"/>
                 <Label x:Name="label_Copy" Content="Target folder:" VerticalAlignment="Top" Height="26" Background="{x:Null}" FontFamily="Trebuchet MS" FontSize="14"/>
             </StackPanel>
-            <StackPanel Height="53" VerticalAlignment="Top" Width="632" RenderTransformOrigin="0.5,0.5">
+            <StackPanel Height="53" VerticalAlignment="Top" Width="583" RenderTransformOrigin="0.5,0.5">
                 <StackPanel.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -29,18 +29,24 @@
                         <TranslateTransform/>
                     </TransformGroup>
                 </StackPanel.RenderTransform>
-                <TextBox x:Name="sourceTextBox" Height="25" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                <TextBox x:Name="targetTextBox" Height="28" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="632" IsReadOnly="True"/>
+                <TextBox x:Name="sourceTextBox" Height="25" TextWrapping="Wrap" Text="" VerticalAlignment="Top" TextChanged="sourceTextBox_TextChanged"/>
+                <TextBox x:Name="targetTextBox" Height="25" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="583" IsReadOnly="True"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="87">
                 <Button x:Name="getListButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="getListButton_Click" Margin="10,0,0,0"/>
                 <Button x:Name="targetButton" Content="Browse" Height="25" VerticalAlignment="Top" Click="targetButton_Click" Margin="10,0,0,0"/>
             </StackPanel>
-            <StackPanel Height="53" VerticalAlignment="Top" Width="90">
+            <StackPanel Height="53" VerticalAlignment="Top" Width="97">
                 <Button x:Name="copyButton" Content="Copy" Height="25" VerticalAlignment="Top" Click="copyButton_Click" Background="#FF07C2EC" Margin="10,0"/>
                 <Button x:Name="unzipButton" Content="Unzip" Height="25" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75" Background="#FF07C2EC" Margin="10,0"/>
             </StackPanel>
-            <CheckBox x:Name="autoUnzipCheckBox" Content="Unzip after copy" Width="117" Margin="0,10" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black"/>
+            <StackPanel Width="116">
+                <CheckBox x:Name="autoUnzipCheckBox" Content="Unzip after copy" Margin="0,18,0,21" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black" Height="24"/>
+            </StackPanel>
+            <StackPanel Width="92">
+                <Button x:Name="cancelButton" Content="Cancel" Height="50" VerticalAlignment="Top" Click="cancel_Click" Margin="0,0,10,0" FontSize="14" IsEnabled="True"/>
+            </StackPanel>
+
         </DockPanel>
         <Grid x:Name="ListGrid" ShowGridLines="False" Margin="10,68,-2,10" RenderTransformOrigin="0.442,0.502">
             <Grid.ColumnDefinitions>
@@ -49,6 +55,7 @@
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="0" Background="Gray" HorizontalAlignment="Right" Width="2"/>
             <ListView   x:Name="sourceListView" 
+                        IsSynchronizedWithCurrentItem="True"
                         ItemsSource="{Binding sourceList}"
                         Margin="0,7,7,12"
                         SelectionMode="Single"
@@ -56,6 +63,7 @@
                         Focusable="True"
                         VirtualizingPanel.IsVirtualizing="False" 
                         MouseLeftButtonUp="sourceListView_MouseLeftButtonUp"
+                        GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
                         >
                 <ListView.View>
                     <GridView x:Name="gridView">
@@ -89,7 +97,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn 
-                                DisplayMemberBinding="{Binding Name}" 
+                                DisplayMemberBinding="{Binding Path=Name}" 
                                 Width="Auto">File name
                             </GridViewColumn>
                         </GridView.Columns>

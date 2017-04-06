@@ -57,6 +57,28 @@ namespace Unziper
             view.UnzippedClick += View_Unzip;
             view.CopyClick += View_CopyClick;
             view.ItemCheckChanged += View_ItemCheckChanged;
+            view.CancelClick += View_CancelClick;
+        }
+
+        private void View_CancelClick()
+        {
+
+            if (model.UnzipCancelTokenSrc != null)
+            {
+                if (model.UnzipCancelTokenSrc.IsCancellationRequested != true)
+                {
+                    view.Status = "Cancelling...";
+                    model.UnzipCancelTokenSrc.Cancel();
+                }
+            }
+            if (model.CopyCancelTokeSrc != null)
+            {
+                if (model.CopyCancelTokeSrc.IsCancellationRequested != true)
+                {
+                    view.Status = "Cancelling...";
+                    model.CopyCancelTokeSrc.Cancel();
+                }
+            }
         }
 
         private void View_ItemCheckChanged(int id, bool isChecked)
@@ -98,10 +120,13 @@ namespace Unziper
 
         private void View_TargetFolderSelected(string targetFolder)
         {
-            DirectoryInfo di = new DirectoryInfo(targetFolder);
-            if (di.Exists)
+            if (!String.IsNullOrEmpty(targetFolder))
             {
-                model.TargetFolder = targetFolder;
+                DirectoryInfo di = new DirectoryInfo(targetFolder);
+                if (di.Exists)
+                {
+                    model.TargetFolder = targetFolder;
+                }
             }
             else
             {

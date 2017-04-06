@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Unziper
 {
-    public class FileListView : FileList
+    public class FileListView : FileList,IComparable<FileListView>
     {
         protected System.Windows.Media.ImageSource fileIcon;
         public System.Windows.Media.ImageSource FileIcon
@@ -15,6 +15,11 @@ namespace Unziper
             {
                 return fileIcon;
             }
+        }
+
+        public int CompareTo(FileListView other)
+        {
+            return (this.Name.CompareTo(other.Name));
         }
 
         public FileListView(int id, string name, System.Windows.Media.ImageSource icon,  bool isChecked)

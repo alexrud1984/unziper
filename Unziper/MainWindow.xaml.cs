@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using FolderPickerLib;
 using System.IO;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace Unziper
 {
@@ -128,7 +129,15 @@ namespace Unziper
         public event TargetFolderSelectedEventHandler TargetFolderSelected;
         public event CopyClickEventHandler CopyClick;
         public event ItemCheckEventHandler ItemCheckChanged;
+        public event CancelClickEventHandler CancelClick;
 
+        private void OnCancelClick()
+        {
+            if (CancelClick != null)
+            {
+                CancelClick();
+            }
+        }
         private void OnCopyClick()
         {
             if (CopyClick != null)
@@ -295,5 +304,83 @@ namespace Unziper
                 MessageBox.Show("Folder not exists");
             }
         }
+
+        private void sourceTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void cancel_Click(object sender, RoutedEventArgs e)
+        {
+            OnCancelClick();
+        }
+
+        GridViewColumnHeader _lastHeaderClicked = null;
+        ListSortDirection _lastDirection = ListSortDirection.Ascending;
+
+        void GridViewColumnHeaderClickedHandler(object sender,
+                                                RoutedEventArgs e)
+        {
+            GridViewColumnHeader headerClicked =
+                  e.OriginalSource as GridViewColumnHeader;
+            ListSortDirection direction;
+
+            if (headerClicked != null)
+            {
+                if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
+                {
+                    if (headerClicked != _lastHeaderClicked)
+                    {
+                        direction = ListSortDirection.Ascending;
+                    }
+                    else
+                    {
+                        if (_lastDirection == ListSortDirection.Ascending)
+                        {
+                            direction = ListSortDirection.Descending;
+                        }
+                        else
+                        {
+                            direction = ListSortDirection.Ascending;
+                        }
+                    }
+
+                    string header = headerClicked.Column.Header as string;
+                    Sort(header, direction);
+
+                    if (direction == ListSortDirection.Ascending)
+                    {
+                        headerClicked.Column.HeaderTemplate =
+                          Resources["HeaderTemplateArrowUp"] as DataTemplate;
+                    }
+                    else
+                    {
+                        headerClicked.Column.HeaderTemplate =
+                          Resources["HeaderTemplateArrowDown"] as DataTemplate;
+                    }
+
+                    // Remove arrow from previously sorted header  
+                    if (_lastHeaderClicked != null && _lastHeaderClicked != headerClicked)
+                    {
+                        _lastHeaderClicked.Column.HeaderTemplate = null;
+                    }
+
+                    _lastHeaderClicked = headerClicked;
+                    _lastDirection = direction;
+                }
+            }
+        }
+
+        private void Sort(string sortBy, ListSortDirection direction)
+        {
+            ICollectionView dataView =
+              CollectionViewSource.GetDefaultView(sourceListView.Items);
+
+            dataView.SortDescriptions.Clear();
+            SortDescription sd = new SortDescription(sortBy, direction);
+            dataView.SortDescriptions.Add(sd);
+            dataView.Refresh();
+        }
+
     }
 }
