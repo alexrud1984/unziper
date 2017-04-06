@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+
 
 namespace Unziper
 {
@@ -25,14 +27,29 @@ namespace Unziper
 
         private void AttachUziperModel(IUnzipModel model)
         {
-            model.ActionData += Model_FileUnzipped;
+            model.ActionData += Model_ActionData;
             model.UnzipFinished += Model_UnzipFinished;
             model.CopyingFinised += Model_CopyingFinised;
+            model.FileCopied += Model_FileCopied;
+            model.FileUnzipped += Model_FileUnzipped;
+        }
+
+        private void Model_FileUnzipped(string fileName)
+        {
+            view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] File unzipped {1}\r\n", DateTime.Now, fileName);
+            view.ProgressBarCurrent = model.UnsippedListSize;
+        }
+
+        private void Model_FileCopied(string fileName)
+        {
+            view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] File copied {1}\r\n", DateTime.Now, fileName);
+            view.ProgressBarCurrent = model.CopiedListSize;
         }
 
         private void Model_CopyingFinised()
         {
             view.Status="Finished to copy";
+            view.IsProgressBarEnabled = false;
             if (view.AutoUnzip)
             {
                 View_Unzip(view);
@@ -43,9 +60,10 @@ namespace Unziper
         {
             view.Status = "Finished to unzip";
             view.ShowMessage("Done! Put the SQL package in relevant folder.");
+            view.IsProgressBarEnabled = false;
         }
 
-        private void Model_FileUnzipped(string sender)
+        private void Model_ActionData(string sender)
         {
             view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", DateTime.Now, sender);
         }
@@ -77,16 +95,15 @@ namespace Unziper
                     model.UnzipCancelTokenSrc.Cancel();
                 }
             }
-            if (model.CopyCancelTokeSrc != null)
+            if (model.CopyCancelTokenSrc != null)
             {
-                if (model.CopyCancelTokeSrc.IsCancellationRequested != true)
+                if (model.CopyCancelTokenSrc.IsCancellationRequested != true)
                 {
                     view.Status = "Cancelling...";
-                    model.CopyCancelTokeSrc.Cancel();
+                    model.CopyCancelTokenSrc.Cancel();
                 }
             }
         }
-
         private void View_ItemCheckChanged(int id, bool isChecked)
         {
             foreach (var item in sourceFilesList)
@@ -134,8 +151,10 @@ namespace Unziper
             }
             model.TargetFolder = view.TargetFolder;
             model.Copy(sourceFilesList);
+            view.ProgressBarMax = model.ToCopyListSize;
+            view.ProgressBarCurrent = 0;
+            view.IsProgressBarEnabled = true;
         }
-
         private void View_TargetFolderSelected(string targetFolder)
         {
             if (!String.IsNullOrEmpty(targetFolder))
@@ -156,7 +175,6 @@ namespace Unziper
                 view.ShowMessage("Selected target folder doesn't exist!");
             }
         }
-
         private void View_SourceFolderSelected(IUnziperView sender)
         {
             sourceFilesList.Clear();
@@ -165,7 +183,6 @@ namespace Unziper
             SourceFilesViewLoad();
             sender.SourceList = sourceFilesView;
         }
-
         private void SourceFilesViewLoad()
         {
             if (sourceFilesList != null)
@@ -222,7 +239,6 @@ namespace Unziper
                 }
             }
         }
-
         private void SourceFilesListLoad(string sourceFolder)
         {
             if (String.IsNullOrWhiteSpace(sourceFolder))
@@ -256,12 +272,14 @@ namespace Unziper
                 view.ShowMessage("Something went wrong. Please try again.");
             }
         }
-
         private void View_Unzip(IUnziperView sender)
         {
             view.Status = "Unzipping...";
             View_TargetFolderSelected(view.TargetFolder);
             model.Unzip();
+            view.ProgressBarMax = model.ToUnzipListSize;
+            view.ProgressBarCurrent = 0;
+            view.IsProgressBarEnabled = true;
         }
     }
 }

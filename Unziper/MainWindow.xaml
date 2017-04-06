@@ -112,6 +112,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
+            <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" Height="12" Margin="0" VerticalAlignment="Center" Width="491" Grid.ColumnSpan="2" ToolTip="Copiing" Visibility="Hidden" Foreground="#FF858785" Opacity="0.7" LargeChange="0"/>
         </Grid>
     </Grid>
 </Window>

@@ -42,6 +42,42 @@ namespace Unziper
                 return sourceList;
             }
         }
+        public double ProgressBarMax
+        {
+            set
+            {
+                progressBar.Maximum = value;
+            }
+            get
+            {
+                return progressBar.Maximum;
+            }
+        }
+        public bool IsProgressBarEnabled
+        {
+            set
+            {
+                if (value)
+                {
+                    progressBar.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    progressBar.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+        public double ProgressBarCurrent
+        {
+            set
+            {
+                progressBar.Value = value;
+            }
+            get
+            {
+                return progressBar.Value;
+            }
+        }
         public string SourceFolder
         {
             set
@@ -65,7 +101,6 @@ namespace Unziper
                 AddFileToList(value);
             }
         }
-
         public string TargetFolder
         {
             get
