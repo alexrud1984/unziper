@@ -105,8 +105,20 @@ namespace Unziper
                     break;
                 }
             }
+            CopyButtonReflect();
         }
-
+        private void CopyButtonReflect()
+        {
+            bool _isCopyEnabled = false;
+            foreach (var item in sourceFilesList)
+            {
+                if (item.IsChecked == true)
+                {
+                    _isCopyEnabled = true;
+                }
+            }
+            view.IsCopyEnabled = _isCopyEnabled;
+        }
         private void View_CopyClick()
         {
             view.Status = "Copying...";
@@ -132,6 +144,11 @@ namespace Unziper
                 if (di.Exists)
                 {
                     model.TargetFolder = targetFolder;
+                    view.IsUnzipEnabled = true;
+                }
+                else
+                {
+                    view.IsUnzipEnabled = false;
                 }
             }
             else

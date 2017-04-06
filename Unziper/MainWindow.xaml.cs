@@ -102,6 +102,28 @@ namespace Unziper
                 autoUnzipCheckBox.IsChecked = value;
             }
         }
+        public bool IsCopyEnabled
+        {
+            set
+            {
+                copyButton.IsEnabled = value;
+            }
+            get
+            {
+                return copyButton.IsEnabled;
+            }
+        }
+        public bool IsUnzipEnabled
+        {
+            set
+            {
+                unzipButton.IsEnabled = value;
+            }
+            get
+            {
+                return unzipButton.IsEnabled;
+            }
+        }
         #endregion
 
         public MainWindow()

@@ -21,6 +21,8 @@ namespace Unziper
         string UnzippedFile { set; get; }
         string Status { set; get; }
         bool AutoUnzip { set; get; }
+        bool IsCopyEnabled { set; get; }
+        bool IsUnzipEnabled { set; get; }
         List<FileListView> SourceList { set; }
 
         event SourceFolderSelectedEventHandler SourceFolderSelected;
