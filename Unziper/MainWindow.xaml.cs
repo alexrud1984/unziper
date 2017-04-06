@@ -25,7 +25,11 @@ namespace Unziper
     /// </summary>
     public partial class MainWindow : Window, IUnziperView
     {
+        #region Fields
         private List<FileListView> sourceList;
+        #endregion
+
+        #region Properties
         public List<FileListView> SourceList
         {
             set
@@ -33,34 +37,11 @@ namespace Unziper
                 sourceList = value;
                 FillSourceView();
             }
-
             get
             {
                 return sourceList;
             }
         }
-
-        private void FillSourceView()
-        {
-            sourceListView.Items.Clear();
-            foreach (var item in sourceList)
-            {
-                ListViewItem lvi = new ListViewItem();
-                lvi.Content = item;
-                sourceListView.Items.Add(lvi);
-            }
-            if (sourceListView.Items.Count != 0)
-            {
-                sourceListView.Focus();
-            }
-        }
-
-        public MainWindow()
-        {
-            InitializeComponent();
-            UnziperPresenter presenter = new UnziperPresenter(this);
-        }
-
         public string SourceFolder
         {
             set
@@ -97,7 +78,6 @@ namespace Unziper
                 targetTextBox.Text = value;
             }
         }
-
         public string Status
         {
             get
@@ -107,11 +87,10 @@ namespace Unziper
 
             set
             {
-                actionColumn.Header=value;
+                actionColumn.Header = value;
             }
         }
-
-        public bool AutoUnzip 
+        public bool AutoUnzip
         {
             get
             {
@@ -120,17 +99,56 @@ namespace Unziper
 
             set
             {
-                autoUnzipCheckBox.IsChecked=value;
+                autoUnzipCheckBox.IsChecked = value;
             }
         }
+        #endregion
 
+        public MainWindow()
+        {
+            InitializeComponent();
+            UnziperPresenter presenter = new UnziperPresenter(this);
+        }
+
+        #region Events
         public event SourceFolderSelectedEventHandler SourceFolderSelected;
         public event UnzipClickEventHandler UnzippedClick;
         public event TargetFolderSelectedEventHandler TargetFolderSelected;
         public event CopyClickEventHandler CopyClick;
         public event ItemCheckEventHandler ItemCheckChanged;
         public event CancelClickEventHandler CancelClick;
+        public event AutodeleteChangedEventHandler AutodeleteChanged;
+        #endregion
 
+        #region Public methods
+        public void ShowMessage(string msg)
+        {
+            MessageBox.Show(msg);
+        }
+        #endregion
+
+        #region Privat methods
+        private void FillSourceView()
+        {
+            sourceListView.Items.Clear();
+            foreach (var item in sourceList)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Content = item;
+                sourceListView.Items.Add(lvi);
+            }
+            if (sourceListView.Items.Count != 0)
+            {
+                sourceListView.Focus();
+            }
+        }
+        private void OnAutodeleteChanged()
+        {
+            if (AutodeleteChanged != null)
+            {
+                AutodeleteChanged((bool)autoDeleteCheckBox.IsChecked);
+            }
+        }
         private void OnCancelClick()
         {
             if (CancelClick != null)
@@ -145,7 +163,6 @@ namespace Unziper
                 CopyClick();
             }
         }
-
         private void OnItemCheckChange(int id, bool isChecked)
         {
             if (ItemCheckChanged != null)
@@ -153,7 +170,6 @@ namespace Unziper
                 ItemCheckChanged(id, isChecked);
             }
         }
-
         private void OnSourceSelected()
         {
             if (SourceFolderSelected != null)
@@ -161,7 +177,6 @@ namespace Unziper
                 SourceFolderSelected(this);
             }
         }
-
         private void OnUnzipped()
         {
             if (UnzippedClick != null)
@@ -169,7 +184,6 @@ namespace Unziper
                 UnzippedClick(this);
             }
         }
-
         private void OnTargetSelected()
         {
             if (TargetFolderSelected != null)
@@ -177,7 +191,6 @@ namespace Unziper
                 TargetFolderSelected(TargetFolder);
             }
         }
-
         private void AddFileToList(string filePath)
         {
             ListViewItem lvi = new ListViewItem();
@@ -188,26 +201,22 @@ namespace Unziper
             actionColumn.Width = filesListView.ActualWidth;
             filesListView.ScrollIntoView(filesListView.SelectedItem);
         }
-
         private void unzipButton_Click(object sender, RoutedEventArgs e)
         {
             OnUnzipped();
         }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
             sourceList[(int)chk.Tag].IsChecked = true;
             OnItemCheckChange((int)chk.Tag, true);
         }
-
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             CheckBox chk = (CheckBox)sender;
             sourceList[(int)chk.Tag].IsChecked = false;
             OnItemCheckChange((int)chk.Tag, false);
         }
-
         private void sourceListView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e != null && e.Key == Key.Space)
@@ -215,7 +224,6 @@ namespace Unziper
                 ChangeCheckedState();
             }
         }
-
         private void sourceListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ListView lv = sender as ListView;
@@ -223,9 +231,7 @@ namespace Unziper
             {
                 ChangeCheckedState();
             }
-
         }
-
         private void ChangeCheckedState()
         {
             int index = 0;
@@ -242,7 +248,6 @@ namespace Unziper
                 OnItemCheckChange(sourceList[index].Id, sourceList[index].IsChecked);
             }
         }
-
         private void Header_CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (sourceList != null)
@@ -257,7 +262,6 @@ namespace Unziper
             }
 
         }
-
         private void Header_CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             if (sourceList != null)
@@ -271,7 +275,6 @@ namespace Unziper
                 FillSourceView();
             }
         }
-
         private void targetButton_Click(object sender, RoutedEventArgs e)
         {
             FolderPickerDialog fpd = new FolderPickerDialog();
@@ -281,11 +284,6 @@ namespace Unziper
                 TargetFolder = fpd.SelectedPath;
             }
             OnTargetSelected();
-        }
-
-        public void ShowMessage(string msg)
-        {
-            MessageBox.Show(msg);
         }
 
         private void copyButton_Click(object sender, RoutedEventArgs e)
@@ -382,5 +380,10 @@ namespace Unziper
             dataView.Refresh();
         }
 
+        private void autoDelete_Changed(object sender, RoutedEventArgs e)
+        {
+            OnAutodeleteChanged();
+        }
+        #endregion
     }
 }

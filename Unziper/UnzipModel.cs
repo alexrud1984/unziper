@@ -29,6 +29,7 @@ namespace Unziper
             }
         }
         public string UnzippedFile { set; get; }
+        public bool Autodelete { set; get; }
 
         public UnzipModel()
         {
@@ -70,6 +71,20 @@ namespace Unziper
                     }
                 }
                 ActionData("Finish to unzip: " + item.FullName);
+                if (Autodelete)
+                {
+                    try
+                    {
+                        zf.Dispose();
+                        item.Delete();
+                        ActionData(item.Name + " - deleted");
+                    }
+                    catch(Exception ex)
+                    {
+                        ActionData(ex.Message);
+                    }
+
+                }
             }
             OnUnzipFinished(targetFolder);
         }

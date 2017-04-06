@@ -28,3 +28,4 @@ C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Release\Un
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Release\Unziper.Properties.Resources.resources
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Release\Unziper.csproj.GenerateResource.Cache
 D:\Projects\Unziper\Unziper\bin\Release\Ionic.Zip.dll
+D:\Projects\Unziper\Unziper\obj\Release\Unziper.csprojResolveAssemblyReference.cache

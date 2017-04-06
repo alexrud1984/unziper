@@ -12,6 +12,7 @@ namespace Unziper
     public delegate void CopyClickEventHandler();
     public delegate void ItemCheckEventHandler(int id, bool isChecked);
     public delegate void CancelClickEventHandler();
+    public delegate void AutodeleteChangedEventHandler(bool isChecked);
 
     public interface IUnziperView
     {
@@ -28,6 +29,7 @@ namespace Unziper
         event CopyClickEventHandler CopyClick;
         event ItemCheckEventHandler ItemCheckChanged;
         event CancelClickEventHandler CancelClick;
+        event AutodeleteChangedEventHandler AutodeleteChanged;
 
         void ShowMessage(string msg);
     }

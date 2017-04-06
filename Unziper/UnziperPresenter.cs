@@ -58,6 +58,12 @@ namespace Unziper
             view.CopyClick += View_CopyClick;
             view.ItemCheckChanged += View_ItemCheckChanged;
             view.CancelClick += View_CancelClick;
+            view.AutodeleteChanged += View_AutodeleteChanged;
+        }
+
+        private void View_AutodeleteChanged(bool isChecked)
+        {
+            model.Autodelete=isChecked;
         }
 
         private void View_CancelClick()

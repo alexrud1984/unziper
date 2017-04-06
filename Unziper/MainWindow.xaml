@@ -33,18 +33,19 @@
                 <TextBox x:Name="targetTextBox" Height="25" TextWrapping="Wrap" Text="" VerticalAlignment="Top" HorizontalAlignment="Left" Width="583" IsReadOnly="True"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="87">
-                <Button x:Name="getListButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="getListButton_Click" Margin="10,0,0,0"/>
-                <Button x:Name="targetButton" Content="Browse" Height="25" VerticalAlignment="Top" Click="targetButton_Click" Margin="10,0,0,0"/>
+                <Button x:Name="getListButton" Content="Get list" Height="25" VerticalAlignment="Top" Click="getListButton_Click" Margin="10,0,0,0" ToolTip="Get files list in Source folder"/>
+                <Button x:Name="targetButton" Content="Browse" Height="25" VerticalAlignment="Top" Click="targetButton_Click" Margin="10,0,0,0" ToolTip="Select Target folder"/>
             </StackPanel>
             <StackPanel Height="53" VerticalAlignment="Top" Width="97">
-                <Button x:Name="copyButton" Content="Copy" Height="25" VerticalAlignment="Top" Click="copyButton_Click" Background="#FF07C2EC" Margin="10,0"/>
-                <Button x:Name="unzipButton" Content="Unzip" Height="25" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75" Background="#FF07C2EC" Margin="10,0"/>
+                <Button x:Name="copyButton" Content="Copy" Height="25" VerticalAlignment="Top" Click="copyButton_Click" Background="#FF07C2EC" Margin="10,0" ToolTip="Copy selected files to Target"/>
+                <Button x:Name="unzipButton" Content="Unzip" Height="25" VerticalAlignment="Top" Click="unzipButton_Click" RenderTransformOrigin="0.556,-0.75" Background="#FF07C2EC" Margin="10,0" ToolTip="Unzip all files in Target folder"/>
             </StackPanel>
-            <StackPanel Width="116">
-                <CheckBox x:Name="autoUnzipCheckBox" Content="Unzip after copy" Margin="0,18,0,21" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black" Height="24"/>
+            <StackPanel Width="130">
+                <CheckBox x:Name="autoUnzipCheckBox" Content="Unzip after copy" Margin="0,5,0,5" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black" Height="16" ToolTip="Automatically unzip all files in Target folder after copy "/>
+                <CheckBox x:Name="autoDeleteCheckBox" Content="Delete after extract" Margin="0,5,0,5" BorderThickness="1" Opacity="0.8" BorderBrush="#FF032E7A" Background="{x:Null}" Foreground="Black" Height="22" ToolTip="Automatically delete all archives in Target folder after extract" Checked="autoDelete_Changed" Unchecked="autoDelete_Changed"/>
             </StackPanel>
-            <StackPanel Width="92">
-                <Button x:Name="cancelButton" Content="Cancel" Height="50" VerticalAlignment="Top" Click="cancel_Click" Margin="0,0,10,0" FontSize="14" IsEnabled="True"/>
+            <StackPanel Width="93">
+                <Button x:Name="cancelButton" Content="Cancel" Height="50" VerticalAlignment="Top" Click="cancel_Click" FontSize="14" IsEnabled="True" Margin="0,0,20,0"/>
             </StackPanel>
 
         </DockPanel>

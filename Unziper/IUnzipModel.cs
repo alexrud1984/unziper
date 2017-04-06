@@ -17,6 +17,7 @@ namespace Unziper
         CancellationTokenSource CopyCancelTokeSrc { set; get; }
         string TargetFolder { set; get; }
         string UnzippedFile { set; get; }
+        bool Autodelete { set; get;}
 
         event FileUnzippedEventHandler ActionData;
         event UnzipFinishedEventHandler UnzipFinished;
