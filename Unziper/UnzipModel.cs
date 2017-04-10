@@ -259,20 +259,14 @@ namespace Unziper
         private double GetDirectorySize(string _path)
         {
             double _size = 0;
-            _size = GetFilesSizeInDir(_path);
-            foreach (var item in Directory.GetDirectories(_path))
-            {
-                _size += GetDirectorySize(item);
-            }
-            return _size;
-        }
-        private double GetFilesSizeInDir(string _path)
-        {
-            double _size = 0;
             foreach (var item in Directory.GetFiles(_path))
             {
                 FileInfo fi = new FileInfo(item);
                 _size += fi.Length;
+            }
+            foreach (var item in Directory.GetDirectories(_path))
+            {
+                _size += GetDirectorySize(item);
             }
             return _size;
         }
