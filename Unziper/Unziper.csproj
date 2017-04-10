@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AsyncExtension.cs" />
     <Compile Include="FileCheck.cs" />
     <Compile Include="FileList.cs" />
     <Compile Include="FlieListView.cs" />

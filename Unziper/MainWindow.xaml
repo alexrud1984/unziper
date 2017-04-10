@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Unziper"
         mc:Ignorable="d"
-        Title="Unziper" Height="555" Width="1110.333" Icon="FolderClosed.ico" BorderBrush="#FF5FB7E0" Foreground="#FF58B4CF" Background="#FF9AE1EC" OpacityMask="#FF519DD3" WindowStyle="ThreeDBorderWindow" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="Unziper" Height="597" Width="1111.333" Icon="FolderClosed.ico" BorderBrush="#FF5FB7E0" Foreground="#FF58B4CF" Background="#FF9AE1EC" OpacityMask="#FF519DD3" WindowStyle="ThreeDBorderWindow" WindowStartupLocation="CenterScreen">
+    <Grid Margin="0,0,0,4">
         <DockPanel Height="53" LastChildFill="False" Margin="10,10,10,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
             <DockPanel.RenderTransform>
                 <TransformGroup>
@@ -54,11 +54,11 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <GridSplitter Grid.Column="0" Background="Gray" HorizontalAlignment="Right" Width="2"/>
+            <GridSplitter Grid.Column="0" Background="Gray" HorizontalAlignment="Right" Width="2" Margin="0,0,0,27"/>
             <ListView   x:Name="sourceListView" 
                         IsSynchronizedWithCurrentItem="True"
                         ItemsSource="{Binding sourceList}"
-                        Margin="0,7,7,12"
+                        Margin="0,7,7,27"
                         SelectionMode="Single"
                         KeyUp="sourceListView_KeyUp" 
                         Focusable="True"
@@ -105,14 +105,17 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <ListView x:Name="filesListView" SelectionMode="Single" Margin="5,7,10,12" RenderTransformOrigin="0.5,0.5" IsSynchronizedWithCurrentItem="True" Background="#FFCBF9FD" ClipToBounds="True" Grid.Column="1" Height="Auto">
+            <ListView x:Name="filesListView" SelectionMode="Single" Margin="5,7,10,27" RenderTransformOrigin="0.5,0.5" IsSynchronizedWithCurrentItem="True" Background="#FFCBF9FD" ClipToBounds="True" Grid.Column="1">
                 <ListView.View>
                     <GridView AllowsColumnReorder="False">
                         <GridViewColumn x:Name="actionColumn" Header="Action"/>
                     </GridView>
                 </ListView.View>
             </ListView>
-            <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" Height="12" Margin="0" VerticalAlignment="Center" Width="491" Grid.ColumnSpan="2" ToolTip="Copiing" Visibility="Hidden" Foreground="#FF858785" Opacity="0.7" LargeChange="0"/>
+            <ProgressBar x:Name="progressBar" Height="22" VerticalAlignment="Bottom" ToolTip="Copy progress" Foreground="#FF858785" Opacity="0.80" LargeChange="0" Visibility="Hidden"/>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" Width="471" Height="22" VerticalAlignment="Bottom">
+                <Label x:Name="timeLeft" Content="" FontSize="11" Height="22" VerticalAlignment="Bottom" Visibility="Hidden"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

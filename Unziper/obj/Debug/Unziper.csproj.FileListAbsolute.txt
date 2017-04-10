@@ -40,3 +40,17 @@ C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Debug\Unzi
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Debug\Unziper.csproj.GenerateResource.Cache
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Debug\Unziper.exe
 C:\Users\oleksiir\Downloads\unziper-master\unziper-master\Unziper\obj\Debug\Unziper.pdb
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\bin\Debug\Unziper.exe.config
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.exe
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.pdb
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\bin\Debug\Unziper.exe
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\bin\Debug\Unziper.pdb
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.csprojResolveAssemblyReference.cache
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\MainWindow.g.cs
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\App.g.cs
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper_MarkupCompile.cache
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper_MarkupCompile.lref
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\MainWindow.baml
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.g.resources
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.Properties.Resources.resources
+C:\Users\oleksiir\Downloads\unziper-master (3)\unziper-master\Unziper\obj\Debug\Unziper.csproj.GenerateResource.Cache

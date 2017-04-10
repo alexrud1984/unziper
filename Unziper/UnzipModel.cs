@@ -56,7 +56,7 @@ namespace Unziper
                 return toUnzipListSize;
             }
         }
-        public double UnsippedListSize
+        public double UnzippedListSize
         {
             get
             {
@@ -77,13 +77,19 @@ namespace Unziper
         public event CopyingFinisedEventHandler CopyingFinised;
         public event FileCopiedEventHandler FileCopied;
         public event FileUnzippedEventHandler FileUnzipped;
+        public event UpdateProgressEventHandler UpdateProgress;
+        public event OperationCanceledEventHandler OperationCanceled;
         #endregion
 
         #region Public methods
         public async void Unzip()
         {
             unzippedListSize = 0;
-            GetZipListSize();
+            var progressHandler = new Progress<double>(value =>
+            {
+                OnUpdateProgress(unzippedListSize + value);
+            });
+            FillZipListSize();
             UnzipCancelTokenSrc = new CancellationTokenSource();
             DirectoryInfo diTarget = new DirectoryInfo(targetFolder);
             foreach (var item in diTarget.GetFiles("*.zip"))
@@ -94,18 +100,17 @@ namespace Unziper
                 {
                     try
                     {
-                        await Task.Run(() =>
-                        {
-                            UnzipCancelTokenSrc.Token.ThrowIfCancellationRequested();
-                            entry.Extract(targetFolder, ExtractExistingFileAction.OverwriteSilently);
-                        });
-                        OnFileUnzipped(entry.FileName);
+                        var progress = progressHandler as IProgress<double>;
+                        UnzipCancelTokenSrc.Token.ThrowIfCancellationRequested();
+                        await AsyncExtension.ExtractToAsync(entry, Path.Combine(targetFolder, entry.FileName), progress, UnzipCancelTokenSrc.Token);
                         unzippedListSize += entry.Info.Length;
+                        OnFileUnzipped(entry.FileName);
                     }
                     catch (OperationCanceledException ex)
                     {
                         ActionData(ex.Message);
                         UnzipCancelTokenSrc.Dispose();
+                        OperationCanceled();
                         return;
                     }
                     catch (Exception ex)
@@ -135,41 +140,45 @@ namespace Unziper
             CopyCancelTokenSrc = new CancellationTokenSource();
             FillItemsListSize(sourceFiles);
             copiedListSize = 0;
+            var progressHandler = new Progress<double>(value =>
+            {
+                OnUpdateProgress(copiedListSize + value);
+            });
             foreach (var item in sourceFiles)
             {
                 if (item.IsChecked)
                 {
                     if (item.IsDirectory)
                     {
-                        DirectoryInfo di = new DirectoryInfo(item.FullName);
-                        if (!System.IO.Directory.Exists(Path.Combine(targetFolder, di.Name)))
-                        {
-                            try
-                            {
-                                ActionData("Copy folder: " + di.FullName);
-                                Directory.CreateDirectory(Path.Combine(targetFolder, di.Name));
-                            }
-                            catch (Exception ex)
-                            {
-                                ActionData("ERROR " + ex.Message);
-                            }
-                        }
-                        DirectoryCopy(item.FullName, Path.Combine(targetFolder, di.Name));
-                    }
-                    else
-                    {
                         try
                         {
-                            CopyCancelTokenSrc.Token.ThrowIfCancellationRequested();
-                            ActionData("Start copy: " + item.FullName + "...");
-                            await CopyFileAsync(item.FullName, Path.Combine(targetFolder, item.Name));
-                            copiedListSize += (new FileInfo(item.FullName)).Length;
-                            FileCopied(item.FullName);
+                            DirectoryInfo di = new DirectoryInfo(item.FullName);
+                            CreateDirectory(di);
+                            await DirectoryCopy(item.FullName, Path.Combine(targetFolder, di.Name), progressHandler);
                         }
                         catch (OperationCanceledException ex)
                         {
                             ActionData(ex.Message);
                             CopyCancelTokenSrc.Dispose();
+                            OperationCanceled();
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            ActionData("ERROR " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            await FileCopy(item.FullName, targetFolder, progressHandler);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            ActionData(ex.Message);
+                            CopyCancelTokenSrc.Dispose();
+                            OperationCanceled();
                             return;
                         }
                         catch (Exception ex)
@@ -211,51 +220,41 @@ namespace Unziper
                 }
             }
         }
-        private async void DirectoryCopy(string source, string target)
+        private void FillZipListSize()
         {
-            //files copy
-            foreach (var item in Directory.GetFiles(source))
+            toUnzipListSize = 0;
+            DirectoryInfo diTarget = new DirectoryInfo(targetFolder);
+            foreach (var item in diTarget.GetFiles("*.zip"))
             {
                 try
                 {
-                    ActionData("Start copy: " + item + "...");
-                    FileInfo fi = new FileInfo(item);
-                    await CopyFileAsync(item, Path.Combine(target, fi.Name));
-                    ActionData("File copied: " + item);
+                    ZipFile zf = ZipFile.Read(item.FullName);
+                    toUnzipListSize += zf.Info.Length;
                 }
                 catch (Exception ex)
                 {
-                    ActionData("ERROR " + ex.Message);
+                    ActionData(ex.Message);
                 }
             }
-            //subdirs copy
-            foreach (var item in Directory.GetDirectories(source))
-            {
-                DirectoryInfo di = new DirectoryInfo(item);
-                if (!System.IO.Directory.Exists(Path.Combine(target, di.Name)))
+        }
+        private async Task DirectoryCopy(string source, string target, Progress<double> progress)
+        {
+            //files copy
+                foreach (var item in Directory.GetFiles(source))
                 {
-                    try
+                    await FileCopy(item, target, progress);
+                }
+                //subdirs copy
+                foreach (var item in Directory.GetDirectories(source))
+                {
+                    DirectoryInfo di = new DirectoryInfo(item);
+                    if (!System.IO.Directory.Exists(Path.Combine(target, di.Name)))
                     {
                         ActionData("Copy folder: " + di.FullName);
                         Directory.CreateDirectory(Path.Combine(target, di.Name));
                     }
-                    catch (Exception ex)
-                    {
-                        ActionData("ERROR " + ex.Message);
-                    }
+                    await DirectoryCopy(item, Path.Combine(target, di.Name), progress);
                 }
-                DirectoryCopy(item, Path.Combine(target, di.Name));
-            }
-        }
-        private async Task CopyFileAsync(string sourcePath, string destinationPath)
-        {
-            using (Stream source = File.OpenRead(sourcePath))
-            {
-                using (Stream destination = File.Create(destinationPath))
-                {
-                    await source.CopyToAsync(destination);
-                }
-            }
         }
         private double GetDirectorySize(string _path)
         {
@@ -277,19 +276,39 @@ namespace Unziper
             }
             return _size;
         }
-        private void GetZipListSize()
+        private void CreateDirectory(DirectoryInfo di)
         {
-            toUnzipListSize = 0;
-            DirectoryInfo diTarget = new DirectoryInfo(targetFolder);
-            foreach (var item in diTarget.GetFiles("*.zip"))
+            if (!System.IO.Directory.Exists(Path.Combine(targetFolder, di.Name)))
             {
-                ZipFile zf = ZipFile.Read(item.FullName);
-                toUnzipListSize += zf.Info.Length;
+                try
+                {
+                    ActionData("Copy folder: " + di.FullName);
+                    Directory.CreateDirectory(Path.Combine(targetFolder, di.Name));
+                }
+                catch (Exception ex)
+                {
+                    ActionData("ERROR " + ex.Message);
+                }
             }
+        }
+        private async Task FileCopy(string sourceItem, string target, IProgress<double> progress)
+        {
+            ActionData("Start copy: " + sourceItem + "...");
+            FileInfo fi = new FileInfo(sourceItem);
+            await AsyncExtension.CopyFileAsync(sourceItem, Path.Combine(target, fi.Name), progress, CopyCancelTokenSrc.Token);
+            copiedListSize += (new FileInfo(sourceItem)).Length;
+            FileCopied(sourceItem);
         }
         #endregion
 
         #region On events methods
+        private void OnOperationCanceled()
+        {
+            if (OperationCanceled != null)
+            {
+                OperationCanceled();
+            }
+        }
         private void OnActionData(string file)
         {
             if (ActionData != null)
@@ -324,6 +343,13 @@ namespace Unziper
             {
                 CopyingFinised();
             }
+        }
+        private void OnUpdateProgress(double value)
+        {
+            if (UpdateProgress != null)
+            {
+                UpdateProgress(value);
+            };
         }
         #endregion
     }

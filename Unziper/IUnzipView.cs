@@ -24,9 +24,11 @@ namespace Unziper
         bool IsCopyEnabled { set; get; }
         bool IsUnzipEnabled { set; get; }
         bool IsProgressBarEnabled { set; }
+        bool IsTimeLeftEnabled { set; }
         double ProgressBarMax { set; get; }
         double ProgressBarCurrent { set; get; }
         List<FileListView> SourceList { set; }
+        string TimeLeft { set; get; }
 
         event SourceFolderSelectedEventHandler SourceFolderSelected;
         event TargetFolderSelectedEventHandler TargetFolderSelected;

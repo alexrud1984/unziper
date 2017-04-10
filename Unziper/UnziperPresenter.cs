@@ -16,6 +16,8 @@ namespace Unziper
         private IUnzipModel model;
         private List<FileCheck> sourceFilesList = new List<FileCheck>();
         private List<FileListView> sourceFilesView = new List<FileListView>();
+        private TimeSpan timeRemaining;
+        private DateTime startTime;
 
         public UnziperPresenter(IUnziperView view)
         {
@@ -32,42 +34,60 @@ namespace Unziper
             model.CopyingFinised += Model_CopyingFinised;
             model.FileCopied += Model_FileCopied;
             model.FileUnzipped += Model_FileUnzipped;
+            model.UpdateProgress += Model_UpdateProgress;
+            model.OperationCanceled += Model_OperationCanceled;
         }
+        private void Model_OperationCanceled()
+        {
+            view.Status = "Operation cancelled";
+            view.ProgressBarCurrent = 0;
+            view.IsProgressBarEnabled = false;
+            view.IsTimeLeftEnabled = false;
+        }
+        private void Model_UpdateProgress(double buffer)
+        {
+            view.ProgressBarCurrent = buffer;
+            try
+            {
+                timeRemaining = TimeSpan.FromTicks(DateTime.Now.Subtract(startTime).Ticks / (int)buffer * (int)(view.ProgressBarMax-buffer));
+                view.TimeLeft = String.Format("{0} hours {1} minutes and {2} seconds left", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
+            }
+            catch(Exception)
+            { }
 
+        }
         private void Model_FileUnzipped(string fileName)
         {
             view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] File unzipped {1}\r\n", DateTime.Now, fileName);
-            view.ProgressBarCurrent = model.UnsippedListSize;
+            view.ProgressBarCurrent = model.UnzippedListSize;
+            timeRemaining = TimeSpan.FromTicks(DateTime.Now.Subtract(startTime).Ticks / (int)model.UnzippedListSize * (int)(view.ProgressBarMax - model.UnzippedListSize));
+            view.TimeLeft = String.Format("{0} hours {1} minutes and {2} seconds left", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
         }
-
         private void Model_FileCopied(string fileName)
         {
             view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] File copied {1}\r\n", DateTime.Now, fileName);
-            view.ProgressBarCurrent = model.CopiedListSize;
         }
-
         private void Model_CopyingFinised()
         {
             view.Status="Finished to copy";
             view.IsProgressBarEnabled = false;
+            view.IsTimeLeftEnabled = false;
             if (view.AutoUnzip)
             {
                 View_Unzip(view);
             }
         }
-
         private void Model_UnzipFinished(string sender)
         {
             view.Status = "Finished to unzip";
             view.ShowMessage("Done! Put the SQL package in relevant folder.");
             view.IsProgressBarEnabled = false;
+            view.IsTimeLeftEnabled = false;
         }
-
         private void Model_ActionData(string sender)
         {
             view.UnzippedFile = String.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", DateTime.Now, sender);
         }
-
         private void AttachUnziperView(IUnziperView view)
         {
             view.SourceFolderSelected += View_SourceFolderSelected;
@@ -78,12 +98,10 @@ namespace Unziper
             view.CancelClick += View_CancelClick;
             view.AutodeleteChanged += View_AutodeleteChanged;
         }
-
         private void View_AutodeleteChanged(bool isChecked)
         {
             model.Autodelete=isChecked;
         }
-
         private void View_CancelClick()
         {
 
@@ -138,6 +156,7 @@ namespace Unziper
         }
         private void View_CopyClick()
         {
+            startTime = DateTime.Now;
             view.Status = "Copying...";
             if (!System.IO.Directory.Exists(view.SourceFolder))
             {
@@ -154,6 +173,7 @@ namespace Unziper
             view.ProgressBarMax = model.ToCopyListSize;
             view.ProgressBarCurrent = 0;
             view.IsProgressBarEnabled = true;
+            view.IsTimeLeftEnabled = true;
         }
         private void View_TargetFolderSelected(string targetFolder)
         {
@@ -274,12 +294,14 @@ namespace Unziper
         }
         private void View_Unzip(IUnziperView sender)
         {
+            startTime = DateTime.Now;
             view.Status = "Unzipping...";
             View_TargetFolderSelected(view.TargetFolder);
             model.Unzip();
             view.ProgressBarMax = model.ToUnzipListSize;
             view.ProgressBarCurrent = 0;
             view.IsProgressBarEnabled = true;
+            view.IsTimeLeftEnabled = true;
         }
     }
 }

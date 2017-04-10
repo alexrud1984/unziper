@@ -12,6 +12,8 @@ namespace Unziper
     public delegate void CopyingFinisedEventHandler();
     public delegate void FileCopiedEventHandler(string fileName);
     public delegate void FileUnzippedEventHandler(string fileName);
+    public delegate void UpdateProgressEventHandler(double buffer);
+    public delegate void OperationCanceledEventHandler();
 
     public interface IUnzipModel
     {
@@ -23,13 +25,15 @@ namespace Unziper
         double ToCopyListSize {get; }
         double CopiedListSize { get; }
         double ToUnzipListSize { get; }
-        double UnsippedListSize { get; }
+        double UnzippedListSize { get; }
 
         event ActionDataEventHandler ActionData;
         event UnzipFinishedEventHandler UnzipFinished;
         event CopyingFinisedEventHandler CopyingFinised;
         event FileCopiedEventHandler FileCopied;
         event FileUnzippedEventHandler FileUnzipped;
+        event UpdateProgressEventHandler UpdateProgress;
+        event OperationCanceledEventHandler OperationCanceled;
 
         void Unzip();
         void Copy(List<FileCheck> sourceFiles);

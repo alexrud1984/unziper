@@ -159,6 +159,34 @@ namespace Unziper
                 return unzipButton.IsEnabled;
             }
         }
+
+        public string TimeLeft
+        {
+            get
+            {
+                return timeLeft.Content.ToString();
+            }
+
+            set
+            {
+                timeLeft.Content=value;
+            }
+        }
+
+        public bool IsTimeLeftEnabled
+        {
+            set
+            {
+                if (value)
+                {
+                    timeLeft.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    timeLeft.Visibility = Visibility.Hidden;
+                }
+            }
+        }
         #endregion
 
         public MainWindow()
